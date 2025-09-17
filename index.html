@@ -168,7 +168,7 @@
       let valorTotal = valorConsumo + iluminacao;
 
       // Aplicando desconto (sem contar iluminação pública)
-      let descontoMensal = valorConsumo * desconto;
+      let descontoMensal = valorTotal * desconto;
       let descontoAnual = descontoMensal * 12;
 
       // Formatação em R$ (compatível com Safari iOS)
