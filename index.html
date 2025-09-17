@@ -90,7 +90,8 @@
       margin-top: 10px;
       text-align: center;
     }
-          /* RESPONSIVIDADE PARA CELULAR */
+
+    /* RESPONSIVIDADE PARA CELULAR */
     @media (max-width: 480px) {
       .top-image {
         height: 180px;
@@ -155,7 +156,7 @@
       const adcBandeira = 0.10328;
       const desconto = 0.15; // 15%
 
-      // Cálculo do valor da fatura
+      // Cálculo do valor da fatura (agora adcBandeira * consumo)
       let valorConsumo = (consumo * (tarifaTE + tarifaTUSD)) + (consumo * adcBandeira);
       let valorTotal = valorConsumo;
 
