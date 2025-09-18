@@ -168,7 +168,7 @@
       let valorTotal = valorConsumo + iluminacao;
 
       // Aplicando desconto (sem contar iluminação pública)
-      let descontoFatura = valorTotal * desconto;
+      let descontoFatura = valorTotal - desconto;
       let descontoMensal = valorConsumo * desconto;
       let descontoAnual = descontoMensal * 12;
 
