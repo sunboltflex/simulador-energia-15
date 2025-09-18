@@ -173,7 +173,7 @@
       let descontoAnual = descontoMensal * 12;
 
       // 4. Valor da fatura com desconto aplicado
-      let valorComDesconto = valorTotal - descontoMensal;
+      let valorComDesconto = (descontoMensal - valorTotal);
 
       // 5. Garante que não fique negativo
       if (valorComDesconto < 0) {
