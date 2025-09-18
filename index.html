@@ -173,13 +173,12 @@
       let descontoAnual = descontoMensal * 12;
 
       // 4. Valor da fatura com desconto aplicado
-      let valorComDesconto = (descontoMensal - valorTotal);
+      let valorComDesconto = (valorConsumo - descontoMensal) + iluminacao;
 
       // 5. Garante que não fique negativo
       if (valorComDesconto < 0) {
-        valorComDesconto = 0;
-      }
-
+       valorComDesconto = 0;
+      }      
 
       // Formatação em R$ (compatível com Safari iOS)
       function formatar(valor) {
