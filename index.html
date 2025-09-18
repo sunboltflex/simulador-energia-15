@@ -177,8 +177,8 @@
       let valorDescFatura  = valorTotal - valorComDesconto;
 
       // 5. Garante que não fique negativo
-      if (valorComDesconto < 0) {
-       valorComDesconto = 0;
+      if (valorDescFatura < 0) {
+       valorComDescFatura = 0;
       }      
 
       // Formatação em R$ (compatível com Safari iOS)
