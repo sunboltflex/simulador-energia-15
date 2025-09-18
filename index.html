@@ -44,6 +44,9 @@
       width: 100%;
       margin-top: 200px; /* para não ficar escondido atrás da imagem */
     }
+    .centralizado {
+      text-align: center; 
+    }
 
     h2 {
       text-align: center;
@@ -188,7 +191,7 @@
 
       document.getElementById('resultado').innerHTML = `
         <p><strong>Valor estimado da fatura:</strong> ${formatar(valorTotal)}</p>
-        <p><strong>FATURA <span style="color: green;">SUNBOLT FLEX</span></strong></p> 
+        <p class="centralizado"><strong>FATURA <span style="color: green;">SUNBOLT FLEX</span></strong></p>
         <p><strong>Valor Total da fatura c/ desconto:</strong> ${formatar(valorDescFatura)}</p>
         <p><strong>Desconto mensal previsto:</strong> ${formatar(descontoMensal)}</p>
         <p><strong>Desconto anual previsto:</strong> ${formatar(descontoAnual)}</p>
