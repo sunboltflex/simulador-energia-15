@@ -170,14 +170,15 @@
       let valorConsumo = (consumo * (tarifaTE + tarifaTUSD)) + (consumo * adcBandeira);
       let valorTotal = valorConsumo + iluminacao;
 
-      // Aplicando desconto (sem contar iluminação pública)
-
-      let descontoMensal = valorConsumo * desconto;
-      let descontoAnual = descontoMensal * 12;
 
       // 4. Valor da fatura com desconto aplicado
       let valorComDesconto = valorTotal * desconto;
       let valorDescFatura  = valorTotal - valorComDesconto;
+
+      // Aplicando desconto (sem contar iluminação pública)
+
+      let descontoMensal = valorComDesconto * desconto;
+      let descontoAnual = descontoMensal * 12;
 
       // 5. Garante que não fique negativo
       if (valorDescFatura < 0) {
