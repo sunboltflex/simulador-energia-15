@@ -168,10 +168,18 @@
       let valorTotal = valorConsumo + iluminacao;
 
       // Aplicando desconto (sem contar iluminação pública)
-      let descontoFatura = valorTotal * desconto;
-      let descontoTotal = (descontoFatura - valorTotal);
+
       let descontoMensal = valorConsumo * desconto;
       let descontoAnual = descontoMensal * 12;
+
+      // 4. Valor da fatura com desconto aplicado
+      let valorComDesconto = (valorConsumo - descontoMensal) + iluminacao;
+
+      // 5. Garante que não fique negativo
+      if (valorComDesconto < 0) {
+        valorComDesconto = 0;
+      }
+
 
       // Formatação em R$ (compatível com Safari iOS)
       function formatar(valor) {
@@ -180,7 +188,7 @@
 
       document.getElementById('resultado').innerHTML = `
         <p><strong>Valor estimado da fatura:</strong> ${formatar(valorTotal)}</p>
-        <p><strong>Valor Total da fatura c/ desconto:</strong> ${formatar(descontoTotal)}</p>
+        <p><strong>Valor Total da fatura c/ desconto:</strong> ${formatar(valorComDesconto)}</p>
         <p><strong>Desconto mensal previsto:</strong> ${formatar(descontoMensal)}</p>
         <p><strong>Desconto anual previsto:</strong> ${formatar(descontoAnual)}</p>
       `;
