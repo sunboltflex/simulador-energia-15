@@ -187,6 +187,13 @@
        valorComDescFatura = 0;
       }      
 
+       document.querySelectorAll("input").forEach(input => {
+    input.addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        document.querySelector("button").click();
+      }
+
       // Formatação em R$ (compatível com Safari iOS)
       function formatar(valor) {
         return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
