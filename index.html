@@ -194,6 +194,7 @@ function calcular() {
     valorTotal < 300 ? "⚠️ Faturas abaixo de R$ 300,00 não podem aderir ao desconto." : "";
 }
 
+// Envia resultado via WhatsApp
 function enviarWhatsApp() {
   if (valorTotal < 300) return;
 
@@ -215,6 +216,14 @@ Desconto anual previsto: ${formatar(descontoAnual)}
   const texto = encodeURIComponent(mensagem.trim());
   window.open(`https://wa.me/5585999416424?text=${texto}`, "_blank");
 }
+
+// Permite pressionar Enter para acionar o botão "Calcular"
+document.addEventListener("keypress", function(e) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    document.querySelector("button").click();
+  }
+});
 </script>
 
 </body>
