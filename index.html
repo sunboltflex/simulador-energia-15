@@ -66,6 +66,10 @@
       cursor: pointer;
     }
 
+    button:hover {
+      background: #218838;
+    }
+
     .resultado {
       margin-top: 20px;
       padding: 15px;
@@ -86,6 +90,11 @@
       background-color: #25D366;
       margin-top: 10px;
       display: none;
+      color: white;
+    }
+
+    #btnWhatsApp:hover {
+      background-color: #1ebe5b;
     }
   </style>
 </head>
@@ -117,6 +126,10 @@
 
 <script>
 let valorTotal = 0;
+let desconto = 0;
+let valorFinal = 0;
+let descontoMensal = 0;
+let descontoAnual = 0;
 
 // TABELAS DE CIP
 const cipResidencial = [
@@ -138,6 +151,10 @@ function obterCIP(valor, classe) {
   return tabela.find(f => valor <= f.max).pct;
 }
 
+function formatar(valor) {
+  return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
 function calcular() {
   const valorBase = parseFloat(document.getElementById("consumo").value);
   const classe = document.getElementById("classe").value;
@@ -152,20 +169,22 @@ function calcular() {
 
   valorTotal = valorBase + valorCIP;
 
-  let desconto = 0;
   if (valorTotal >= 300 && valorTotal < 1000) desconto = 0.15;
   else if (valorTotal >= 1000 && valorTotal <= 2000) desconto = 0.20;
   else if (valorTotal > 2000) desconto = 0.25;
+  else desconto = 0;
 
-  const valorFinal = valorTotal * (1 - desconto);
+  descontoMensal = valorTotal * desconto;
+  descontoAnual = descontoMensal * 12;
+  valorFinal = valorTotal - descontoMensal;
 
   document.getElementById("resultado").innerHTML = `
     <p><strong>Classe:</strong> ${classe.toUpperCase()}</p>
-    <p><strong>Valor base:</strong> R$ ${valorBase.toFixed(2)}</p>
-    <p><strong>CIP (${(pctCIP*100).toFixed(2)}%):</strong> R$ ${valorCIP.toFixed(2)}</p>
-    <p><strong>Valor da fatura:</strong> R$ ${valorTotal.toFixed(2)}</p>
-    <p><strong>Desconto aplicado:</strong> ${(desconto*100)}%</p>
-    <p><strong>Fatura com desconto:</strong> R$ ${valorFinal.toFixed(2)}</p>
+    <p><strong>Valor base:</strong> ${formatar(valorBase)}</p>
+    <p><strong>CIP (${(pctCIP*100).toFixed(2)}%):</strong> ${formatar(valorCIP)}</p>
+    <p><strong>Valor da fatura:</strong> ${formatar(valorTotal)}</p>
+    <p><strong>Desconto aplicado:</strong> ${(desconto*100).toFixed(0)}%</p>
+    <p><strong>Fatura com desconto:</strong> ${formatar(valorFinal)}</p>
   `;
 
   document.getElementById("btnWhatsApp").style.display =
@@ -178,11 +197,22 @@ function calcular() {
 function enviarWhatsApp() {
   if (valorTotal < 300) return;
 
-  const texto = encodeURIComponent(
-    "Resultado do simulador:\n\n" +
-    document.getElementById("resultado").innerText
-  );
+  let mensagem = `
+RESULTADO DA SIMULAÇÃO
 
+Classe: ${document.getElementById("classe").value.toUpperCase()}
+Valor da fatura: ${formatar(valorTotal)}
+
+Desconto aplicado: ${(desconto * 100).toFixed(0)}%
+Valor da fatura com desconto: ${formatar(valorFinal)}
+
+Desconto mensal previsto: ${formatar(descontoMensal)}
+Desconto anual previsto: ${formatar(descontoAnual)}
+
+⚠️ Atenção: Esta é uma simulação. Os valores podem variar conforme bandeiras tarifárias, consumo real e condições de contrato.
+`;
+
+  const texto = encodeURIComponent(mensagem.trim());
   window.open(`https://wa.me/5585999416424?text=${texto}`, "_blank");
 }
 </script>
