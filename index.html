@@ -130,40 +130,23 @@
 
     // TABELAS DE CIP
     const cipResidencial = [
-      {max:30, pct:0.0072},
-      {max:100, pct:0.0107},
-      {max:150, pct:0.0252},
-      {max:200, pct:0.0268},
-      {max:250, pct:0.0284},
-      {max:350, pct:0.0669},
-      {max:400, pct:0.0671},
-      {max:500, pct:0.0682},
-      {max:800, pct:0.1387},
-      {max:1000, pct:0.1905},
-      {max:2000, pct:0.3466},
-      {max:Infinity, pct:0.3590}
+      {max:30, pct:0.0072},{max:100, pct:0.0107},{max:150, pct:0.0252},
+      {max:200, pct:0.0268},{max:250, pct:0.0284},{max:350, pct:0.0669},
+      {max:400, pct:0.0671},{max:500, pct:0.0682},{max:800, pct:0.1387},
+      {max:1000, pct:0.1905},{max:2000, pct:0.3466},{max:Infinity, pct:0.3590}
     ];
 
     const cipNaoResidencial = [
-      {max:30, pct:0.0116},
-      {max:100, pct:0.0259},
-      {max:150, pct:0.0663},
-      {max:200, pct:0.0682},
-      {max:250, pct:0.0691},
-      {max:350, pct:0.1638},
-      {max:400, pct:0.1652},
-      {max:500, pct:0.1654},
-      {max:800, pct:0.3671},
-      {max:1000, pct:0.3772},
-      {max:2000, pct:0.7750},
-      {max:Infinity, pct:0.8549}
+      {max:30, pct:0.0116},{max:100, pct:0.0259},{max:150, pct:0.0663},
+      {max:200, pct:0.0682},{max:250, pct:0.0691},{max:350, pct:0.1638},
+      {max:400, pct:0.1652},{max:500, pct:0.1654},{max:800, pct:0.3671},
+      {max:1000, pct:0.3772},{max:2000, pct:0.7750},{max:Infinity, pct:0.8549}
     ];
 
     function obterCIP(consumo, classe) {
       const tabela = classe === "residencial"
         ? cipResidencial
         : cipNaoResidencial;
-
       return tabela.find(f => consumo <= f.max).pct;
     }
 
@@ -188,9 +171,14 @@
 
       valorTotal = valorEnergia + valorCIP;
 
-      const desconto =
-        valorTotal >= 1000 ? 0.20 :
-        valorTotal >= 300  ? 0.15 : 0;
+      let desconto = 0;
+      if (valorTotal >= 300 && valorTotal < 1000) {
+        desconto = 0.15;
+      } else if (valorTotal >= 1000 && valorTotal <= 2000) {
+        desconto = 0.20;
+      } else if (valorTotal > 2000) {
+        desconto = 0.25;
+      }
 
       const valorFinal = valorTotal * (1 - desconto);
 
@@ -199,21 +187,22 @@
         <p><strong>Consumo:</strong> ${consumo} kWh</p>
         <p><strong>Valor da Energia:</strong> R$ ${valorEnergia.toFixed(2)}</p>
         <p><strong>CIP (${(pctCIP*100).toFixed(2)}%):</strong> R$ ${valorCIP.toFixed(2)}</p>
-        <p><strong>Fatura estimada:</strong> R$ ${valorTotal.toFixed(2)}</p>
+        <p><strong>Valor da fatura:</strong> R$ ${valorTotal.toFixed(2)}</p>
+        <p><strong>Desconto aplicado:</strong> ${(desconto*100).toFixed(0)}%</p>
         <p><strong>Fatura com desconto:</strong> R$ ${valorFinal.toFixed(2)}</p>
       `;
 
       document.getElementById("btnWhatsApp").style.display =
-        valorTotal > 300 ? "block" : "none";
+        valorTotal >= 300 ? "block" : "none";
 
       document.getElementById("aviso").textContent =
-        valorTotal <= 300
+        valorTotal < 300
           ? "⚠️ Faturas abaixo de R$ 300,00 não podem aderir ao desconto."
           : "";
     }
 
     function enviarWhatsApp() {
-      if (valorTotal <= 300) return;
+      if (valorTotal < 300) return;
 
       const texto = encodeURIComponent(
         "Resultado do simulador:\n\n" +
