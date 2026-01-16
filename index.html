@@ -64,6 +64,7 @@
       border-radius: 6px;
       font-size: 18px;
       cursor: pointer;
+      margin-bottom: 10px;
     }
 
     button:hover {
@@ -88,9 +89,8 @@
 
     #btnWhatsApp {
       background-color: #25D366;
-      margin-top: 10px;
-      display: none;
       color: white;
+      display: none;
     }
 
     #btnWhatsApp:hover {
@@ -116,12 +116,11 @@
   <label>Valor estimado da fatura (R$):</label>
   <input type="number" id="consumo" min="1" placeholder="Ex: 850">
 
-  <button onclick="calcular()">Calcular</button>
+  <button id="btnCalcular" onclick="calcular()">Calcular</button>
+  <button id="btnWhatsApp" onclick="enviarWhatsApp()">📲 Enviar resultado pelo WhatsApp</button>
 
   <div class="resultado" id="resultado"></div>
   <div class="aviso" id="aviso"></div>
-
-  <button id="btnWhatsApp" onclick="enviarWhatsApp()">📲 Enviar resultado pelo WhatsApp</button>
 </div>
 
 <script>
@@ -130,6 +129,9 @@ let desconto = 0;
 let valorFinal = 0;
 let descontoMensal = 0;
 let descontoAnual = 0;
+
+// Controle para alternar Enter
+let enterCount = 0;
 
 // TABELAS DE CIP
 const cipResidencial = [
@@ -194,7 +196,6 @@ function calcular() {
     valorTotal < 300 ? "⚠️ Faturas abaixo de R$ 300,00 não podem aderir ao desconto." : "";
 }
 
-// Envia resultado via WhatsApp
 function enviarWhatsApp() {
   if (valorTotal < 300) return;
 
@@ -217,11 +218,18 @@ Desconto anual previsto: ${formatar(descontoAnual)}
   window.open(`https://wa.me/5585999416424?text=${texto}`, "_blank");
 }
 
-// Permite pressionar Enter para acionar o botão "Calcular"
+// Alterna Enter entre Calcular e WhatsApp
 document.addEventListener("keypress", function(e) {
   if (e.key === "Enter") {
     e.preventDefault();
-    document.querySelector("button").click();
+    enterCount++;
+    if (enterCount % 2 === 1) {
+      document.getElementById("btnCalcular").click();
+    } else {
+      if (document.getElementById("btnWhatsApp").style.display === "block") {
+        document.getElementById("btnWhatsApp").click();
+      }
+    }
   }
 });
 </script>
