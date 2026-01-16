@@ -66,10 +66,6 @@
       cursor: pointer;
     }
 
-    button:hover {
-      background: #218838;
-    }
-
     .resultado {
       margin-top: 20px;
       padding: 15px;
@@ -91,130 +87,105 @@
       margin-top: 10px;
       display: none;
     }
-
-    #btnWhatsApp:hover {
-      background-color: #1ebe5b;
-    }
   </style>
 </head>
 
 <body>
 
-  <div class="top-image"></div>
+<div class="top-image"></div>
 
-  <div class="container">
-    <h2>Simule seu Desconto</h2>
+<div class="container">
+  <h2>Simule seu Desconto</h2>
 
-    <label for="classe">Classe da Unidade:</label>
-    <select id="classe">
-      <option value="">Selecione</option>
-      <option value="residencial">Classe Residencial</option>
-      <option value="nao">Classe Não Residencial</option>
-    </select>
+  <label>Classe da Unidade:</label>
+  <select id="classe">
+    <option value="">Selecione</option>
+    <option value="residencial">Classe Residencial</option>
+    <option value="nao">Classe Não Residencial</option>
+  </select>
 
-    <label for="consumo">Consumo Mensal (kWh):</label>
-    <input type="number" id="consumo" min="1" placeholder="Ex: 220">
+  <label>Valor estimado da fatura (R$):</label>
+  <input type="number" id="consumo" min="1" placeholder="Ex: 850">
 
-    <button onclick="calcular()">Calcular</button>
+  <button onclick="calcular()">Calcular</button>
 
-    <div class="resultado" id="resultado"></div>
-    <div class="aviso" id="aviso"></div>
+  <div class="resultado" id="resultado"></div>
+  <div class="aviso" id="aviso"></div>
 
-    <button id="btnWhatsApp" onclick="enviarWhatsApp()">
-      📲 Enviar resultado pelo WhatsApp
-    </button>
-  </div>
+  <button id="btnWhatsApp" onclick="enviarWhatsApp()">📲 Enviar resultado pelo WhatsApp</button>
+</div>
 
-  <script>
-    let valorTotal = 0;
+<script>
+let valorTotal = 0;
 
-    // TABELAS DE CIP
-    const cipResidencial = [
-      {max:30, pct:0.0072},{max:100, pct:0.0107},{max:150, pct:0.0252},
-      {max:200, pct:0.0268},{max:250, pct:0.0284},{max:350, pct:0.0669},
-      {max:400, pct:0.0671},{max:500, pct:0.0682},{max:800, pct:0.1387},
-      {max:1000, pct:0.1905},{max:2000, pct:0.3466},{max:Infinity, pct:0.3590}
-    ];
+// TABELAS DE CIP
+const cipResidencial = [
+  {max:30, pct:0.0072},{max:100, pct:0.0107},{max:150, pct:0.0252},
+  {max:200, pct:0.0268},{max:250, pct:0.0284},{max:350, pct:0.0669},
+  {max:400, pct:0.0671},{max:500, pct:0.0682},{max:800, pct:0.1387},
+  {max:1000, pct:0.1905},{max:2000, pct:0.3466},{max:Infinity, pct:0.3590}
+];
 
-    const cipNaoResidencial = [
-      {max:30, pct:0.0116},{max:100, pct:0.0259},{max:150, pct:0.0663},
-      {max:200, pct:0.0682},{max:250, pct:0.0691},{max:350, pct:0.1638},
-      {max:400, pct:0.1652},{max:500, pct:0.1654},{max:800, pct:0.3671},
-      {max:1000, pct:0.3772},{max:2000, pct:0.7750},{max:Infinity, pct:0.8549}
-    ];
+const cipNaoResidencial = [
+  {max:30, pct:0.0116},{max:100, pct:0.0259},{max:150, pct:0.0663},
+  {max:200, pct:0.0682},{max:250, pct:0.0691},{max:350, pct:0.1638},
+  {max:400, pct:0.1652},{max:500, pct:0.1654},{max:800, pct:0.3671},
+  {max:1000, pct:0.3772},{max:2000, pct:0.7750},{max:Infinity, pct:0.8549}
+];
 
-    function obterCIP(consumo, classe) {
-      const tabela = classe === "residencial"
-        ? cipResidencial
-        : cipNaoResidencial;
-      return tabela.find(f => consumo <= f.max).pct;
-    }
+function obterCIP(valor, classe) {
+  const tabela = classe === "residencial" ? cipResidencial : cipNaoResidencial;
+  return tabela.find(f => valor <= f.max).pct;
+}
 
-    function calcular() {
-      const consumo = parseFloat(document.getElementById("consumo").value);
-      const classe = document.getElementById("classe").value;
+function calcular() {
+  const valorBase = parseFloat(document.getElementById("consumo").value);
+  const classe = document.getElementById("classe").value;
 
-      if (!classe || !consumo || consumo <= 0) {
-        alert("Preencha corretamente a classe e o consumo.");
-        return;
-      }
+  if (!classe || !valorBase || valorBase <= 0) {
+    alert("Preencha corretamente os campos.");
+    return;
+  }
 
-      const tarifaTE = 0.01;
-      const tarifaTUSD = 0.01;
-      const adcBandeira = 0.01;
+  const pctCIP = obterCIP(valorBase, classe);
+  const valorCIP = valorBase * pctCIP;
 
-      const valorEnergia =
-        consumo * (tarifaTE + tarifaTUSD + adcBandeira);
+  valorTotal = valorBase + valorCIP;
 
-      const pctCIP = obterCIP(consumo, classe);
-      const valorCIP = valorEnergia * pctCIP;
+  let desconto = 0;
+  if (valorTotal >= 300 && valorTotal < 1000) desconto = 0.15;
+  else if (valorTotal >= 1000 && valorTotal <= 2000) desconto = 0.20;
+  else if (valorTotal > 2000) desconto = 0.25;
 
-      valorTotal = valorEnergia + valorCIP;
+  const valorFinal = valorTotal * (1 - desconto);
 
-      let desconto = 0;
-      if (valorTotal >= 300 && valorTotal < 1000) {
-        desconto = 0.15;
-      } else if (valorTotal >= 1000 && valorTotal <= 2000) {
-        desconto = 0.20;
-      } else if (valorTotal > 2000) {
-        desconto = 0.25;
-      }
+  document.getElementById("resultado").innerHTML = `
+    <p><strong>Classe:</strong> ${classe.toUpperCase()}</p>
+    <p><strong>Valor base:</strong> R$ ${valorBase.toFixed(2)}</p>
+    <p><strong>CIP (${(pctCIP*100).toFixed(2)}%):</strong> R$ ${valorCIP.toFixed(2)}</p>
+    <p><strong>Valor da fatura:</strong> R$ ${valorTotal.toFixed(2)}</p>
+    <p><strong>Desconto aplicado:</strong> ${(desconto*100)}%</p>
+    <p><strong>Fatura com desconto:</strong> R$ ${valorFinal.toFixed(2)}</p>
+  `;
 
-      const valorFinal = valorTotal * (1 - desconto);
+  document.getElementById("btnWhatsApp").style.display =
+    valorTotal >= 300 ? "block" : "none";
 
-      document.getElementById("resultado").innerHTML = `
-        <p><strong>Classe:</strong> ${classe.toUpperCase()}</p>
-        <p><strong>Consumo:</strong> ${consumo} kWh</p>
-        <p><strong>Valor da Energia:</strong> R$ ${valorEnergia.toFixed(2)}</p>
-        <p><strong>CIP (${(pctCIP*100).toFixed(2)}%):</strong> R$ ${valorCIP.toFixed(2)}</p>
-        <p><strong>Valor da fatura:</strong> R$ ${valorTotal.toFixed(2)}</p>
-        <p><strong>Desconto aplicado:</strong> ${(desconto*100).toFixed(0)}%</p>
-        <p><strong>Fatura com desconto:</strong> R$ ${valorFinal.toFixed(2)}</p>
-      `;
+  document.getElementById("aviso").textContent =
+    valorTotal < 300 ? "⚠️ Faturas abaixo de R$ 300,00 não podem aderir ao desconto." : "";
+}
 
-      document.getElementById("btnWhatsApp").style.display =
-        valorTotal >= 300 ? "block" : "none";
+function enviarWhatsApp() {
+  if (valorTotal < 300) return;
 
-      document.getElementById("aviso").textContent =
-        valorTotal < 300
-          ? "⚠️ Faturas abaixo de R$ 300,00 não podem aderir ao desconto."
-          : "";
-    }
+  const texto = encodeURIComponent(
+    "Resultado do simulador:\n\n" +
+    document.getElementById("resultado").innerText
+  );
 
-    function enviarWhatsApp() {
-      if (valorTotal < 300) return;
-
-      const texto = encodeURIComponent(
-        "Resultado do simulador:\n\n" +
-        document.getElementById("resultado").innerText
-      );
-
-      window.open(
-        `https://wa.me/5585999416424?text=${texto}`,
-        "_blank"
-      );
-    }
-  </script>
+  window.open(`https://wa.me/5585999416424?text=${texto}`, "_blank");
+}
+</script>
 
 </body>
 </html>
