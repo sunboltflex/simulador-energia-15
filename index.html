@@ -89,9 +89,9 @@ button:hover {
 #btnWhatsApp {
   background-color: #25D366;
   color: white;
-  display: block; /* sempre ocupa o mesmo espaço */
+  display: block;
   margin-top: 10px;
-  visibility: hidden; /* escondido, mas mantém a posição */
+  visibility: hidden; /* mantém posição, mas escondido */
 }
 
 #btnWhatsApp:hover {
@@ -192,6 +192,7 @@ function calcular() {
     btnWhats.style.visibility = "visible";
   } else {
     btnWhats.style.visibility = "hidden";
+    enterCount = 0; // reset Enter count se fatura < 300
   }
 
   document.getElementById("aviso").textContent =
@@ -224,13 +225,17 @@ Desconto anual previsto: ${formatar(descontoAnual)}
 document.addEventListener("keypress", function(e) {
   if (e.key === "Enter") {
     e.preventDefault();
+    const btnWhats = document.getElementById("btnWhatsApp");
+    if (valorTotal < 300) enterCount = 0; // reset se fatura pequena
+
     enterCount++;
     if (enterCount % 2 === 1) {
       document.getElementById("btnCalcular").click();
     } else {
-      const btnWhats = document.getElementById("btnWhatsApp");
       if (btnWhats.style.visibility === "visible") {
         btnWhats.click();
+      } else {
+        enterCount = 1; // evita pressionar WhatsApp se invisível
       }
     }
   }
