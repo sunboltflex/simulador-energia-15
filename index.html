@@ -70,8 +70,8 @@ button:hover {
   background: #218838;
 }
 
-.resultado {
-  margin-top: 20px;
+.resultado, .credito {
+  margin-top: 15px;
   padding: 15px;
   background: #f9f9f9;
   border-radius: 8px;
@@ -108,14 +108,16 @@ button:hover {
 <h2>Simule seu Desconto</h2>
 
 <label>Classe da Unidade:</label>
-<select id="classe">
+<select id="classe" onchange="mostrarCredito()">
   <option value="">Selecione</option>
   <option value="residencial">Classe Residencial</option>
   <option value="nao">Classe Não Residencial</option>
 </select>
 
 <label>Consumo Mensal (kWh):</label>
-<input type="number" id="consumo" min="1" placeholder="Ex: 850">
+<input type="number" id="consumo" min="1" placeholder="Ex: 850" oninput="mostrarCredito()">
+
+<div class="credito" id="credito"></div>
 
 <button id="btnCalcular" onclick="calcular()">Calcular</button>
 <button id="btnWhatsApp" onclick="enviarWhatsApp()">📲 Enviar resultado pelo WhatsApp</button>
@@ -157,6 +159,22 @@ function formatar(valor) {
   return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
+// MOSTRAR CRÉDITO AUTOMATICAMENTE AO DIGITAR CONSUMO
+function mostrarCredito() {
+  const consumo = parseFloat(document.getElementById("consumo").value);
+  const classe = document.getElementById("classe").value;
+  if (!classe || !consumo || consumo <= 0) {
+    document.getElementById("credito").innerHTML = "";
+    return;
+  }
+  const pctCIP = obterCIP(consumo, classe);
+  const valorCredito = BASE_CREDITO * pctCIP;
+
+  document.getElementById("credito").innerHTML = `
+    <p><strong>950 × percentual da faixa de kWh:</strong> ${formatar(valorCredito)}</p>
+  `;
+}
+
 function calcular() {
   const consumo = parseFloat(document.getElementById("consumo").value);
   const classe = document.getElementById("classe").value;
@@ -195,7 +213,7 @@ function calcular() {
   document.getElementById("aviso").textContent =
     valorTotal < 300 ? "⚠️ Faturas abaixo de R$ 300,00 não podem aderir ao desconto." : "";
 
-  enterCount = 0; // reseta contagem para novo ciclo
+  enterCount = 0;
 }
 
 function enviarWhatsApp() {
@@ -222,20 +240,17 @@ Fatura com desconto: ${formatar(valorFinal)}
   );
 }
 
-/* ⏎ ENTER: 1x = Calcular, 2x = WhatsApp */
+// ENTER 1x = calcular, ENTER 2x = enviar WhatsApp
 document.addEventListener("keydown", function(e) {
   if (e.key === "Enter") {
     e.preventDefault();
     enterCount++;
-
     if (enterCount === 1) {
       document.getElementById("btnCalcular").click();
     } else if (enterCount === 2) {
       const btnWhats = document.getElementById("btnWhatsApp");
-      if (btnWhats.style.visibility === "visible") {
-        btnWhats.click();
-      }
-      enterCount = 0; // reseta para novo ciclo
+      if (btnWhats.style.visibility === "visible") btnWhats.click();
+      enterCount = 0;
     }
   }
 });
