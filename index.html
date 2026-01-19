@@ -148,7 +148,9 @@ function calcular() {
     consumo * (tarifaTE + tarifaTUSD + bandeira);
 
   const percentualCIP = obterPercentualCIP(consumo, classe);
-  const cip = (consumo + 950) * percentualCIP;
+
+  // 🔥 NOVA REGRA DA CIP (CONFORME PEDIDO)
+  const cip = 950 * percentualCIP;
 
   valorTotal = valorConsumo + cip;
 
