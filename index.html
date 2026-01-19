@@ -132,6 +132,9 @@ let descontoMensal = 0;
 let descontoAnual = 0;
 let enterCount = 0;
 
+// Valor fixo interno
+const BASE_CREDITO = 950;
+
 const cipResidencial = [
   {max:30, pct:0.0072},{max:100, pct:0.0107},{max:150, pct:0.0252},
   {max:200, pct:0.0268},{max:250, pct:0.0284},{max:350, pct:0.0669},
@@ -164,8 +167,12 @@ function calcular() {
     return;
   }
 
-  // Apenas o consumo define o valor total
-  valorTotal = consumo;
+  // Calcula o crédito interno
+  const pctCIP = obterCIP(consumo, classe);
+  const credito = BASE_CREDITO * pctCIP;
+
+  // Soma consumo + crédito para fatura
+  valorTotal = consumo + credito;
 
   if (valorTotal >= 300 && valorTotal < 1000) desconto = 0.15;
   else if (valorTotal >= 1000 && valorTotal <= 2000) desconto = 0.20;
