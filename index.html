@@ -130,7 +130,6 @@ let desconto = 0;
 let valorFinal = 0;
 let descontoMensal = 0;
 let descontoAnual = 0;
-let enterCount = 0;
 
 const BASE_CREDITO = 950;
 
@@ -183,9 +182,6 @@ function calcular() {
   document.getElementById("resultado").innerHTML = `
     <p><strong>Classe:</strong> ${classe.toUpperCase()}</p>
     <p><strong>Consumo informado:</strong> ${consumo} kWh</p>
-    <p><strong>Base do crédito:</strong> ${BASE_CREDITO} kWh</p>
-    <p><strong>Percentual da faixa:</strong> ${(pctCIP*100).toFixed(2)}%</p>
-    <p><strong>Crédito gerado:</strong> ${formatar(valorCIP)}</p>
     <p><strong>Valor da fatura:</strong> ${formatar(valorTotal)}</p>
     <p><strong>Desconto aplicado:</strong> ${(desconto*100).toFixed(0)}%</p>
     <p><strong>Fatura com desconto:</strong> ${formatar(valorFinal)}</p>
