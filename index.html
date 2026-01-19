@@ -1,238 +1,252 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Simulador de Desconto de Energia</title>
-
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f4f4f9;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 10px;
-  margin: 0;
-}
-
-.top-image {
-  width: 100%;
-  max-width: 400px;
-  height: 150px;
-  background: url("LOGO-03.png") no-repeat center;
-  background-size: contain;
-  margin: 20px auto;
-}
-
-.container {
-  background: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  width: 100%;
-  max-width: 420px;
-}
-
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-label {
-  font-weight: bold;
-  margin-top: 10px;
-  display: block;
-}
-
-input, select {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  margin-bottom: 15px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 16px;
-}
-
-button {
-  background: #28a745;
-  color: #fff;
-  border: none;
-  padding: 12px;
-  width: 100%;
-  border-radius: 6px;
-  font-size: 18px;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #218838;
-}
-
-.resultado {
-  margin-top: 15px;
-  padding: 15px;
-  background: #f9f9f9;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  font-size: 16px;
-}
-
-.aviso {
-  margin-top: 10px;
-  color: #b22222;
-  font-weight: bold;
-  text-align: center;
-}
-
-#btnWhatsApp {
-  background-color: #25D366;
-  color: white;
-  display: block;
-  margin-top: 10px;
-  visibility: hidden;
-}
-
-#btnWhatsApp:hover {
-  background-color: #1ebe5b;
-}
-</style>
-</head>
-
-<body>
-
-<div class="top-image"></div>
-
-<div class="container">
-<h2>Simule seu Desconto</h2>
-
-<label>Classe da Unidade:</label>
-<select id="classe">
-  <option value="">Selecione</option>
-  <option value="residencial">Classe Residencial</option>
-  <option value="nao">Classe Não Residencial</option>
-</select>
-
-<label>Consumo Mensal (kWh):</label>
-<input type="number" id="consumo" min="1" placeholder="Ex: 850">
-
-<button id="btnCalcular" onclick="calcular()">Calcular</button>
-<button id="btnWhatsApp" onclick="enviarWhatsApp()">📲 Enviar resultado pelo WhatsApp</button>
-
-<div class="resultado" id="resultado"></div>
-<div class="aviso" id="aviso"></div>
-</div>
-
-<script>
-let valorTotal = 0;
-let desconto = 0;
-let valorFinal = 0;
-let descontoMensal = 0;
-let descontoAnual = 0;
-let enterCount = 0;
-
-const cipResidencial = [
-  {max:30, pct:0.0072},{max:100, pct:0.0107},{max:150, pct:0.0252},
-  {max:200, pct:0.0268},{max:250, pct:0.0284},{max:350, pct:0.0669},
-  {max:400, pct:0.0671},{max:500, pct:0.0682},{max:800, pct:0.1387},
-  {max:1000, pct:0.1905},{max:2000, pct:0.3466},{max:Infinity, pct:0.3590}
-];
-
-const cipNaoResidencial = [
-  {max:30, pct:0.0116},{max:100, pct:0.0259},{max:150, pct:0.0663},
-  {max:200, pct:0.0682},{max:250, pct:0.0691},{max:350, pct:0.1638},
-  {max:400, pct:0.1652},{max:500, pct:0.1654},{max:800, pct:0.3671},
-  {max:1000, pct:0.3772},{max:2000, pct:0.7750},{max:Infinity, pct:0.8549}
-];
-
-function obterCIP(consumo, classe) {
-  const tabela = classe === "residencial" ? cipResidencial : cipNaoResidencial;
-  return tabela.find(f => consumo <= f.max).pct;
-}
-
-function formatar(valor) {
-  return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
-
-function calcular() {
-  const consumo = parseFloat(document.getElementById("consumo").value);
-  const classe = document.getElementById("classe").value;
-
-  if (!classe || !consumo || consumo <= 0) {
-    alert("Preencha corretamente os campos.");
-    return;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Simulador de Desconto de Energia</title>
+  <style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    /* ❌ removi o overflow:hidden que travava a rolagem */
   }
 
-  const pctCIP = obterCIP(consumo, classe);
-  valorTotal = consumo * pctCIP; // Agora o valor da fatura é consumo × percentual da faixa
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f9;
+    display: flex;
+    flex-direction: column; /* empilha logo + container */
+    align-items: center;
+    padding: 10px;
+  }
 
-  if (valorTotal >= 300 && valorTotal < 1000) desconto = 0.15;
-  else if (valorTotal >= 1000 && valorTotal <= 2000) desconto = 0.20;
-  else if (valorTotal > 2000) desconto = 0.25;
-  else desconto = 0;
+  .top-image {
+    width: 100%;
+    max-width: 400px; /* limite em telas grandes */
+    height: 150px;
+    background: url("LOGO-03.png") no-repeat center center;
+    background-size: contain;
+    margin: 20px auto;
+    /* ❌ removi position:fixed */
+  }
 
-  descontoMensal = valorTotal * desconto;
-  descontoAnual = descontoMensal * 12;
-  valorFinal = valorTotal - descontoMensal;
+  .container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 420px;
+  }
 
-  document.getElementById("resultado").innerHTML = `
-    <p><strong>Consumo informado:</strong> ${consumo} kWh</p>
-    <p><strong>Valor da fatura:</strong> ${formatar(valorTotal)}</p>
-    <p><strong>Desconto aplicado:</strong> ${(desconto*100).toFixed(0)}%</p>
-    <p><strong>Desconto mensal:</strong> ${formatar(descontoMensal)}</p>
-    <p><strong>Desconto anual:</strong> ${formatar(descontoAnual)}</p>
-    <p><strong>Fatura com desconto:</strong> ${formatar(valorFinal)}</p>
-  `;
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+  }
 
-  document.getElementById("btnWhatsApp").style.visibility =
-    valorTotal >= 300 ? "visible" : "hidden";
+  label {
+    font-weight: bold;
+    margin-top: 10px;
+    display: block;
+  }
 
-  document.getElementById("aviso").textContent =
-    valorTotal < 300 ? "⚠️ Faturas abaixo de R$ 300,00 não podem aderir ao desconto." : "";
+  input {
+    width: 100%;
+    padding: 7px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+  }
 
-  enterCount = 0;
-}
+  button {
+    background: #28a745;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    border-radius: 6px;
+    font-size: 18px;
+    cursor: pointer;
+  }
 
-function enviarWhatsApp() {
-  if (valorTotal < 300) return;
+  button:hover {
+    background: #218838;
+  }
 
-  const mensagem = `
-RESULTADO DA SIMULAÇÃO
+  .resultado {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+  }
 
-Consumo: ${document.getElementById("consumo").value} kWh
-Valor da fatura: ${formatar(valorTotal)}
+  .erro {
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
+    text-align: center;
+  }
 
-Desconto aplicado: ${(desconto*100).toFixed(0)}%
-Desconto mensal: ${formatar(descontoMensal)}
-Desconto anual: ${formatar(descontoAnual)}
+  #btnWhatsApp {
+    background-color: #25D366;
+    margin-top: 10px;
+    display: none;
+  }
 
-Fatura com desconto: ${formatar(valorFinal)}
+  #btnWhatsApp:hover {
+    background-color: #1ebe5b;
+  }
 
-⚠️ Esta é uma simulação. Os valores de economia são estimativas que podem variar conforme bandeiras tarifárias, consumo real e condições de contrato.
-`;
+  .aviso {
+    margin-top: 10px;
+    color: #b22222;
+    font-weight: bold;
+    text-align: center;
+  }
 
-  window.open(
-    "https://wa.me/5585999416424?text=" + encodeURIComponent(mensagem.trim()),
-    "_blank"
-  );
-}
+  /* Responsividade */
+  @media (max-width: 600px) {
+    .top-image {
+      height: 120px;
+    }
 
-// ENTER 1x = calcular, ENTER 2x = enviar WhatsApp
-document.addEventListener("keydown", function(e) {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    enterCount++;
-    if (enterCount === 1) {
-      document.getElementById("btnCalcular").click();
-    } else if (enterCount === 2) {
-      const btnWhats = document.getElementById("btnWhatsApp");
-      if (btnWhats.style.visibility === "visible") btnWhats.click();
-      enterCount = 0;
+    .container {
+      padding: 15px;
+    }
+
+    h2 {
+      font-size: 18px;
+    }
+
+    input, button {
+      font-size: 16px;
+    }
+
+    .resultado {
+      font-size: 14px;
     }
   }
-});
-</script>
+</style>
 
+</head>
+<body>
+
+  <div class="top-image"></div>
+
+  <div class="container">
+    <h2>Simule seu Desconto</h2>
+    <label for="iluminacao">Iluminação Pública (R$):</label>
+    <input type="number" id="iluminacao" inputmode="decimal" min="0" placeholder="Ex: 17,65" autofocus>
+
+    <label for="consumo">Consumo Mensal (kWh):</label>
+    <input type="number" id="consumo" inputmode="decimal" min="0" placeholder="Ex: 220">
+
+    <button onclick="calcular()">Calcular</button>
+
+    <div class="resultado" id="resultado"></div>
+
+    <div class="aviso" id="aviso"></div>
+
+        <!-- Botão WhatsApp -->
+      <button id="btnWhatsApp" class="btn w-100 mt-3 text-white" onclick="enviarWhatsApp()" style="display:none;">
+        📲 Enviar resultado pelo WhatsApp
+      </button>
+
+    <div class="erro" id="erro"></div>
+  </div>
+
+  <script>
+    let valorTotal = 0; // variável global
+
+    function calcular() {
+      let iluminacao = parseFloat(document.getElementById('iluminacao').value) || 0;
+      let consumo = parseFloat(document.getElementById('consumo').value) || 0;
+
+      if (iluminacao <= 0 || consumo < 0) {
+        document.getElementById('erro').textContent = "⚠️ Os valores não podem ser negativos.";
+        document.getElementById('resultado').innerHTML = "";
+        document.getElementById('btnWhatsApp').style.display = 'none';
+        document.getElementById('aviso').textContent = "";
+        return;
+      } else {
+        document.getElementById('erro').textContent = "";
+      }
+
+      const tarifaTE = 0.32165;
+      const tarifaTUSD = 0.60988;
+      const adcBandeira = 0.10333;
+
+      let valorConsumo = (consumo * (tarifaTE + tarifaTUSD)) + (consumo * adcBandeira);
+      valorTotal = valorConsumo + iluminacao;
+
+      let desconto = 0;
+      if (valorTotal >= 300 && valorTotal < 1000) {
+        desconto = 0.15;
+      } else if (valorTotal >= 1000) {
+        desconto = 0.20;
+      }
+
+      let descontoMensal = valorConsumo * desconto;
+      let descontoAnual = descontoMensal * 12;
+      let valorComDesconto = valorTotal * desconto;
+      let valorDescFatura = valorTotal - valorComDesconto;
+
+      if (valorDescFatura < 0) {
+        valorDescFatura = 0;
+      }
+
+      function formatar(valor) {
+        return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      }
+
+      let resultadoHTML = `
+        <p><strong>Valor estimado da fatura:</strong> ${formatar(valorTotal)}</p>
+        <p style="text-align: center;"><strong><span style="color: green;">FATURA SUNBOLT FLEX</span></strong></p>
+      `;
+
+      if (desconto > 0) {
+        resultadoHTML += `<p><strong>Desconto aplicado:</strong> ${desconto * 100}%</p>
+          <p><strong>Valor Total da fatura c/ desconto:</strong> ${formatar(valorDescFatura)}</p>
+          <p><strong>Desconto mensal previsto:</strong> ${formatar(descontoMensal)}</p>
+          <p><strong>Desconto anual previsto:</strong> ${formatar(descontoAnual)}</p>`;
+      }
+
+      document.getElementById('resultado').innerHTML = resultadoHTML;
+
+      if (valorTotal > 300) {
+        document.getElementById('btnWhatsApp').style.display = 'block';
+        document.getElementById('aviso').textContent = "";
+      } else {
+        document.getElementById('btnWhatsApp').style.display = 'none';
+        document.getElementById('aviso').textContent = "⚠️ Faturas abaixo de R$ 300,00 não podem aderir ao desconto.";
+      }
+    }
+
+    function enviarWhatsApp() {
+      if (valorTotal <= 300) {
+        alert("⚠️ O envio só é permitido para valores acima de R$ 300,00.");
+        return;
+      }
+
+      const resultadoTexto = document.getElementById('resultado').innerText;
+      const telefone = "5585999416424"; // número de destino
+      const mensagem = encodeURIComponent("Resultado do simulador de desconto de energia:\n\n" + resultadoTexto);
+      const url = `https://wa.me/${telefone}?text=${mensagem}`;
+      window.open(url, "_blank");
+    }
+
+    document.addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        document.querySelector("button").click();
+      } 
+    });
+  </script>
 </body>
 </html>
