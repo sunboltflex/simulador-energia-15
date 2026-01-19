@@ -91,7 +91,7 @@ button:hover {
   color: white;
   display: block;
   margin-top: 10px;
-  visibility: hidden; /* mantém posição, mas escondido */
+  visibility: hidden;
 }
 
 #btnWhatsApp:hover {
@@ -132,6 +132,8 @@ let descontoMensal = 0;
 let descontoAnual = 0;
 let enterCount = 0;
 
+const BASE_CREDITO = 950;
+
 const cipResidencial = [
   {max:30, pct:0.0072},{max:100, pct:0.0107},{max:150, pct:0.0252},
   {max:200, pct:0.0268},{max:250, pct:0.0284},{max:350, pct:0.0669},
@@ -146,9 +148,9 @@ const cipNaoResidencial = [
   {max:1000, pct:0.3772},{max:2000, pct:0.7750},{max:Infinity, pct:0.8549}
 ];
 
-function obterCIP(valor, classe) {
+function obterCIP(consumo, classe) {
   const tabela = classe === "residencial" ? cipResidencial : cipNaoResidencial;
-  return tabela.find(f => valor <= f.max).pct;
+  return tabela.find(f => consumo <= f.max).pct;
 }
 
 function formatar(valor) {
@@ -156,18 +158,18 @@ function formatar(valor) {
 }
 
 function calcular() {
-  const valorBase = parseFloat(document.getElementById("consumo").value);
+  const consumo = parseFloat(document.getElementById("consumo").value);
   const classe = document.getElementById("classe").value;
 
-  if (!classe || !valorBase || valorBase <= 0) {
+  if (!classe || !consumo || consumo <= 0) {
     alert("Preencha corretamente os campos.");
     return;
   }
 
-  const pctCIP = obterCIP(valorBase, classe);
-  const valorCIP = valorBase * pctCIP;
+  const pctCIP = obterCIP(consumo, classe);
+  const valorCIP = BASE_CREDITO * pctCIP;
 
-  valorTotal = valorBase + valorCIP;
+  valorTotal = consumo + valorCIP;
 
   if (valorTotal >= 300 && valorTotal < 1000) desconto = 0.15;
   else if (valorTotal >= 1000 && valorTotal <= 2000) desconto = 0.20;
@@ -180,20 +182,17 @@ function calcular() {
 
   document.getElementById("resultado").innerHTML = `
     <p><strong>Classe:</strong> ${classe.toUpperCase()}</p>
-    <p><strong>Valor base:</strong> ${formatar(valorBase)}</p>
-    <p><strong>CIP (${(pctCIP*100).toFixed(2)}%):</strong> ${formatar(valorCIP)}</p>
+    <p><strong>Consumo informado:</strong> ${consumo} kWh</p>
+    <p><strong>Base do crédito:</strong> ${BASE_CREDITO} kWh</p>
+    <p><strong>Percentual da faixa:</strong> ${(pctCIP*100).toFixed(2)}%</p>
+    <p><strong>Crédito gerado:</strong> ${formatar(valorCIP)}</p>
     <p><strong>Valor da fatura:</strong> ${formatar(valorTotal)}</p>
     <p><strong>Desconto aplicado:</strong> ${(desconto*100).toFixed(0)}%</p>
     <p><strong>Fatura com desconto:</strong> ${formatar(valorFinal)}</p>
   `;
 
-  const btnWhats = document.getElementById("btnWhatsApp");
-  if (valorTotal >= 300) {
-    btnWhats.style.visibility = "visible";
-  } else {
-    btnWhats.style.visibility = "hidden";
-    enterCount = 0; // reset Enter count se fatura < 300
-  }
+  document.getElementById("btnWhatsApp").style.visibility =
+    valorTotal >= 300 ? "visible" : "hidden";
 
   document.getElementById("aviso").textContent =
     valorTotal < 300 ? "⚠️ Faturas abaixo de R$ 300,00 não podem aderir ao desconto." : "";
@@ -202,44 +201,26 @@ function calcular() {
 function enviarWhatsApp() {
   if (valorTotal < 300) return;
 
-  let mensagem = `
+  const mensagem = `
 RESULTADO DA SIMULAÇÃO
 
 Classe: ${document.getElementById("classe").value.toUpperCase()}
 Valor da fatura: ${formatar(valorTotal)}
 
-Desconto aplicado: ${(desconto * 100).toFixed(0)}%
-Valor da fatura com desconto: ${formatar(valorFinal)}
+Desconto aplicado: ${(desconto*100).toFixed(0)}%
+Fatura com desconto: ${formatar(valorFinal)}
 
-Desconto mensal previsto: ${formatar(descontoMensal)}
-Desconto anual previsto: ${formatar(descontoAnual)}
+Desconto mensal: ${formatar(descontoMensal)}
+Desconto anual: ${formatar(descontoAnual)}
 
-⚠️ Atenção: Esta é uma simulação. Os valores podem variar conforme bandeiras tarifárias, consumo real e condições de contrato.
+⚠️ Valores simulados.
 `;
 
-  const texto = encodeURIComponent(mensagem.trim());
-  window.open(`https://wa.me/5585999416424?text=${texto}`, "_blank");
+  window.open(
+    "https://wa.me/5585999416424?text=" + encodeURIComponent(mensagem),
+    "_blank"
+  );
 }
-
-// Alterna Enter entre Calcular e WhatsApp
-document.addEventListener("keypress", function(e) {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    const btnWhats = document.getElementById("btnWhatsApp");
-    if (valorTotal < 300) enterCount = 0; // reset se fatura pequena
-
-    enterCount++;
-    if (enterCount % 2 === 1) {
-      document.getElementById("btnCalcular").click();
-    } else {
-      if (btnWhats.style.visibility === "visible") {
-        btnWhats.click();
-      } else {
-        enterCount = 1; // evita pressionar WhatsApp se invisível
-      }
-    }
-  }
-});
 </script>
 
 </body>
