@@ -195,6 +195,14 @@ function calcular() {
     valorTotal < 300 ? "⚠️ Faturas abaixo de R$ 300,00 não podem aderir ao desconto." : "";
 }
 
+/* 🔑 ATIVA ENTER PARA CALCULAR */
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    document.getElementById("btnCalcular").click();
+  }
+});
+
 function enviarWhatsApp() {
   if (valorTotal < 300) return;
 
