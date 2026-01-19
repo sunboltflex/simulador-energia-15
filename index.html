@@ -183,6 +183,8 @@ function calcular() {
     <p><strong>Consumo informado:</strong> ${consumo} kWh</p>
     <p><strong>Valor da fatura:</strong> ${formatar(valorTotal)}</p>
     <p><strong>Desconto aplicado:</strong> ${(desconto*100).toFixed(0)}%</p>
+    <p><strong>Desconto mensal:</strong> ${formatar(descontoMensal)}</p>
+    <p><strong>Desconto anual:</strong> ${formatar(descontoAnual)}</p>
     <p><strong>Fatura com desconto:</strong> ${formatar(valorFinal)}</p>
   `;
 
@@ -203,10 +205,10 @@ Consumo: ${document.getElementById("consumo").value} kWh
 Valor da fatura: ${formatar(valorTotal)}
 
 Desconto aplicado: ${(desconto*100).toFixed(0)}%
-Fatura com desconto: ${formatar(valorFinal)}
-
 Desconto mensal: ${formatar(descontoMensal)}
 Desconto anual: ${formatar(descontoAnual)}
+
+Fatura com desconto: ${formatar(valorFinal)}
 
 ⚠️ Valores simulados.
 `;
