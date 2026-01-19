@@ -195,7 +195,7 @@ function calcular() {
   document.getElementById("aviso").textContent =
     valorTotal < 300 ? "⚠️ Faturas abaixo de R$ 300,00 não podem aderir ao desconto." : "";
 
-  enterCount = 0; // reseta contagem após novo cálculo
+  enterCount = 0; // reseta contagem para novo ciclo
 }
 
 function enviarWhatsApp() {
@@ -222,7 +222,7 @@ Fatura com desconto: ${formatar(valorFinal)}
   );
 }
 
-/* ⏎ ENTER alterna entre Calcular e WhatsApp */
+/* ⏎ ENTER: 1x = Calcular, 2x = WhatsApp */
 document.addEventListener("keydown", function(e) {
   if (e.key === "Enter") {
     e.preventDefault();
@@ -235,7 +235,7 @@ document.addEventListener("keydown", function(e) {
       if (btnWhats.style.visibility === "visible") {
         btnWhats.click();
       }
-      enterCount = 0;
+      enterCount = 0; // reseta para novo ciclo
     }
   }
 });
