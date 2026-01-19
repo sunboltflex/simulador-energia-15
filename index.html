@@ -70,7 +70,7 @@ button:hover {
   background: #218838;
 }
 
-.resultado, .credito {
+.resultado {
   margin-top: 15px;
   padding: 15px;
   background: #f9f9f9;
@@ -108,16 +108,14 @@ button:hover {
 <h2>Simule seu Desconto</h2>
 
 <label>Classe da Unidade:</label>
-<select id="classe" onchange="mostrarCredito()">
+<select id="classe">
   <option value="">Selecione</option>
   <option value="residencial">Classe Residencial</option>
   <option value="nao">Classe Não Residencial</option>
 </select>
 
 <label>Consumo Mensal (kWh):</label>
-<input type="number" id="consumo" min="1" placeholder="Ex: 850" oninput="mostrarCredito()">
-
-<div class="credito" id="credito"></div>
+<input type="number" id="consumo" min="1" placeholder="Ex: 850">
 
 <button id="btnCalcular" onclick="calcular()">Calcular</button>
 <button id="btnWhatsApp" onclick="enviarWhatsApp()">📲 Enviar resultado pelo WhatsApp</button>
@@ -157,22 +155,6 @@ function obterCIP(consumo, classe) {
 
 function formatar(valor) {
   return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
-
-// MOSTRAR CRÉDITO AUTOMATICAMENTE AO DIGITAR CONSUMO
-function mostrarCredito() {
-  const consumo = parseFloat(document.getElementById("consumo").value);
-  const classe = document.getElementById("classe").value;
-  if (!classe || !consumo || consumo <= 0) {
-    document.getElementById("credito").innerHTML = "";
-    return;
-  }
-  const pctCIP = obterCIP(consumo, classe);
-  const valorCredito = BASE_CREDITO * pctCIP;
-
-  document.getElementById("credito").innerHTML = `
-    <p><strong>950 × percentual da faixa de kWh:</strong> ${formatar(valorCredito)}</p>
-  `;
 }
 
 function calcular() {
