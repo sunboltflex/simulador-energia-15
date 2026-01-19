@@ -130,6 +130,7 @@ let desconto = 0;
 let valorFinal = 0;
 let descontoMensal = 0;
 let descontoAnual = 0;
+let enterCount = 0;
 
 const BASE_CREDITO = 950;
 
@@ -193,15 +194,9 @@ function calcular() {
 
   document.getElementById("aviso").textContent =
     valorTotal < 300 ? "⚠️ Faturas abaixo de R$ 300,00 não podem aderir ao desconto." : "";
-}
 
-/* 🔑 ATIVA ENTER PARA CALCULAR */
-document.addEventListener("keydown", function(e) {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    document.getElementById("btnCalcular").click();
-  }
-});
+  enterCount = 0; // reseta contagem após novo cálculo
+}
 
 function enviarWhatsApp() {
   if (valorTotal < 300) return;
@@ -218,14 +213,32 @@ Desconto anual: ${formatar(descontoAnual)}
 
 Fatura com desconto: ${formatar(valorFinal)}
 
-⚠️ Valores simulados.
+⚠️ Esta é uma simulação. Os valores de economia são estimativas que podem variar conforme bandeiras tarifárias, consumo real e condições de contrato.
 `;
 
   window.open(
-    "https://wa.me/5585999416424?text=" + encodeURIComponent(mensagem),
+    "https://wa.me/5585999416424?text=" + encodeURIComponent(mensagem.trim()),
     "_blank"
   );
 }
+
+/* ⏎ ENTER alterna entre Calcular e WhatsApp */
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    enterCount++;
+
+    if (enterCount === 1) {
+      document.getElementById("btnCalcular").click();
+    } else if (enterCount === 2) {
+      const btnWhats = document.getElementById("btnWhatsApp");
+      if (btnWhats.style.visibility === "visible") {
+        btnWhats.click();
+      }
+      enterCount = 0;
+    }
+  }
+});
 </script>
 
 </body>
