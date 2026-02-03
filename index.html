@@ -195,11 +195,15 @@
       valorTotal = valorConsumo + iluminacao;
 
       let desconto = 0;
-      if (valorTotal >= 300 && valorTotal < 999) {
-        desconto = 0.15;
-      } else if (valorTotal >= 1000) {
-        desconto = 0.20;
+
+        if (valorTotal >= 300 && valorTotal < 1000) {
+         desconto = 0.15;
+      } else if (valorTotal >= 1000 && valorTotal < 2000) {
+          desconto = 0.20;
+      } else if (valorTotal >= 2000 && valorTotal < 20000) {
+          desconto = 0.25;
       }
+
 
       let descontoMensal = valorConsumo * desconto;
       let descontoAnual = descontoMensal * 12;
