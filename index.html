@@ -129,19 +129,22 @@
     <h2>Simule seu Desconto</h2>
 
     <label for="iluminacao">Iluminação Pública (R$):</label>
-    <input type="number" id="iluminacao" inputmode="decimal" min="0" step="0.01" placeholder="Ex: 17,65">
+    <input type="number" id="iluminacao" min="0" step="0.01">
 
     <label for="consumo">Consumo Mensal (kWh):</label>
-    <input type="number" id="consumo" inputmode="decimal" min="0" step="0.01" placeholder="Ex: 220">
+    <input type="number" id="consumo" min="0" step="0.01">
 
     <label for="tarifaTE">Tarifa TE (R$/kWh):</label>
-    <input type="number" id="tarifaTE" inputmode="decimal" min="0" step="0.00001" placeholder="Ex: 0,32143">
+    <input type="number" id="tarifaTE" min="0" step="0.00001">
 
     <label for="tarifaTUSD">Tarifa TUSD (R$/kWh):</label>
-    <input type="number" id="tarifaTUSD" inputmode="decimal" min="0" step="0.00001" placeholder="Ex: 0,60952">
+    <input type="number" id="tarifaTUSD" min="0" step="0.00001">
 
     <label for="adcBandeira">Adicional de Bandeira (R$/kWh):</label>
-    <input type="number" id="adcBandeira" inputmode="decimal" min="0" step="0.00001" placeholder="Ex: 0,10333">
+    <input type="number" id="adcBandeira" min="0" step="0.00001">
+
+    <label for="descontoManual">Desconto Manual (%) - Opcional:</label>
+    <input type="number" id="descontoManual" min="0" max="100" step="0.01" placeholder="Ex: 20">
 
     <button onclick="calcular()">Calcular</button>
 
@@ -153,90 +156,99 @@
     <div class="erro" id="erro"></div>
   </div>
 
-  <script>
-    let valorTotal = 0;
+<script>
+let valorTotal = 0;
 
-    function calcular() {
-      const iluminacao = parseFloat(document.getElementById('iluminacao').value) || 0;
-      const consumo = parseFloat(document.getElementById('consumo').value) || 0;
-      const tarifaTE = parseFloat(document.getElementById('tarifaTE').value) || 0;
-      const tarifaTUSD = parseFloat(document.getElementById('tarifaTUSD').value) || 0;
-      const adcBandeira = parseFloat(document.getElementById('adcBandeira').value) || 0;
+function calcular() {
+  const iluminacao = parseFloat(document.getElementById('iluminacao').value) || 0;
+  const consumo = parseFloat(document.getElementById('consumo').value) || 0;
+  const tarifaTE = parseFloat(document.getElementById('tarifaTE').value) || 0;
+  const tarifaTUSD = parseFloat(document.getElementById('tarifaTUSD').value) || 0;
+  const adcBandeira = parseFloat(document.getElementById('adcBandeira').value) || 0;
+  const descontoManualInput = parseFloat(document.getElementById('descontoManual').value);
 
-      if (iluminacao < 0 || consumo <= 0 || tarifaTE <= 0 || tarifaTUSD <= 0) {
-        document.getElementById('erro').textContent =
-          "⚠️ Preencha todos os campos corretamente.";
-        document.getElementById('resultado').innerHTML = "";
-        document.getElementById('btnWhatsApp').style.display = 'none';
-        return;
-      }
+  if (iluminacao < 0 || consumo <= 0 || tarifaTE <= 0 || tarifaTUSD <= 0) {
+    document.getElementById('erro').textContent =
+      "⚠️ Preencha todos os campos corretamente.";
+    document.getElementById('resultado').innerHTML = "";
+    document.getElementById('btnWhatsApp').style.display = 'none';
+    return;
+  }
 
-      document.getElementById('erro').textContent = "";
+  document.getElementById('erro').textContent = "";
 
-      const valorConsumo =
-        (consumo * (tarifaTE + tarifaTUSD)) +
-        (consumo * adcBandeira);
+  const valorConsumo =
+    (consumo * (tarifaTE + tarifaTUSD)) +
+    (consumo * adcBandeira);
 
-      valorTotal = valorConsumo + iluminacao;
+  valorTotal = valorConsumo + iluminacao;
 
-      let desconto = 0;
-      if (valorTotal >= 300 && valorTotal < 1000) desconto = 0.15;
-      else if (valorTotal >= 1000 && valorTotal < 2000) desconto = 0.20;
-      else if (valorTotal >= 2000 && valorTotal < 20000) desconto = 0.25;
+  let desconto = 0;
 
-      const descontoMensal = valorConsumo * desconto;
-      const descontoAnual = descontoMensal * 12;
-      const valorComDesconto = valorTotal - (valorTotal * desconto);
+  // ✅ Se existir desconto manual válido, usa ele
+  if (!isNaN(descontoManualInput) && descontoManualInput > 0 && descontoManualInput <= 100) {
+    desconto = descontoManualInput / 100;
+  } 
+  // ✅ Caso contrário aplica regra automática
+  else {
+    if (valorTotal >= 300 && valorTotal < 1000) desconto = 0.15;
+    else if (valorTotal >= 1000 && valorTotal < 2000) desconto = 0.20;
+    else if (valorTotal >= 2000 && valorTotal < 20000) desconto = 0.25;
+  }
 
-      const formatar = v =>
-        v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  const descontoMensal = valorTotal * desconto;
+  const descontoAnual = descontoMensal * 12;
+  const valorComDesconto = valorTotal - descontoMensal;
 
-      let html = `
-        <p><strong>Valor estimado da fatura:</strong> ${formatar(valorTotal)}</p>
-        <p style="text-align:center;"><strong style="color:green;">FATURA SUNBOLT FLEX</strong></p>
-      `;
+  const formatar = v =>
+    v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-      if (desconto > 0) {
-        html += `
-          <p><strong>Valor da fatura com desconto:</strong> ${formatar(valorComDesconto)}</p>
-          <p><strong>Desconto mensal previsto:</strong> ${formatar(descontoMensal)}</p>
-          <p><strong>Desconto anual previsto:</strong> ${formatar(descontoAnual)}</p>
+  let html = `
+    <p><strong>Valor estimado da fatura:</strong> ${formatar(valorTotal)}</p>
+    <p style="text-align:center;"><strong style="color:green;">FATURA SUNBOLT FLEX</strong></p>
+  `;
 
-          <div class="aviso-atencao">
-            ⚠️ Esta é uma simulação. Os valores podem variar conforme consumo,
-            bandeiras tarifárias e condições contratuais.
-          </div>
-        `;
-      }
+  if (desconto > 0) {
+    html += `
+      <p><strong>Valor da fatura com desconto:</strong> ${formatar(valorComDesconto)}</p>
+      <p><strong>Desconto mensal previsto:</strong> ${formatar(descontoMensal)}</p>
+      <p><strong>Desconto anual previsto:</strong> ${formatar(descontoAnual)}</p>
 
-      document.getElementById('resultado').innerHTML = html;
+      <div class="aviso-atencao">
+        ⚠️ Esta é uma simulação. Os valores podem variar conforme consumo,
+        bandeiras tarifárias e condições contratuais.
+      </div>
+    `;
+  }
 
-      if (valorTotal >= 300) {
-        document.getElementById('btnWhatsApp').style.display = 'block';
-        document.getElementById('aviso').textContent = "";
-      } else {
-        document.getElementById('btnWhatsApp').style.display = 'none';
-        document.getElementById('aviso').textContent =
-          "⚠️ Faturas abaixo de R$ 300,00 não podem aderir ao desconto.";
-      }
-    }
+  document.getElementById('resultado').innerHTML = html;
 
-    function enviarWhatsApp() {
-      if (valorTotal < 300) return;
+  if (valorTotal >= 300) {
+    document.getElementById('btnWhatsApp').style.display = 'block';
+    document.getElementById('aviso').textContent = "";
+  } else {
+    document.getElementById('btnWhatsApp').style.display = 'none';
+    document.getElementById('aviso').textContent =
+      "⚠️ Faturas abaixo de R$ 300,00 não podem aderir ao desconto.";
+  }
+}
 
-      const texto = document.getElementById('resultado').innerText;
-      const telefone = "5585999416424";
-      const msg = encodeURIComponent("Resultado do simulador:\n\n" + texto);
-      window.open(`https://wa.me/${telefone}?text=${msg}`, "_blank");
-    }
+function enviarWhatsApp() {
+  if (valorTotal < 300) return;
 
-    document.addEventListener("keypress", function (e) {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        calcular();
-      }
-    });
-  </script>
+  const texto = document.getElementById('resultado').innerText;
+  const telefone = "5585999416424";
+  const msg = encodeURIComponent("Resultado do simulador:\n\n" + texto);
+  window.open(`https://wa.me/${telefone}?text=${msg}`, "_blank");
+}
+
+document.addEventListener("keypress", function (e) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    calcular();
+  }
+});
+</script>
 
 </body>
 </html>
