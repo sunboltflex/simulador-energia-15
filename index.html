@@ -1,236 +1,508 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Simulador de Desconto de Energia</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Simulador de Desconto de Energia | Sunbolt Flex</title>
 
-<style>
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
+  <!-- Fonte moderna -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-body {
-  font-family: Arial, sans-serif;
-  background: #f4f4f9;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 10px;
-}
+  <style>
+    :root{
+      --bg: #0b1220;
+      --card: rgba(255,255,255,.08);
+      --card2: rgba(255,255,255,.10);
+      --border: rgba(255,255,255,.14);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.70);
+      --muted2: rgba(255,255,255,.55);
+      --shadow: 0 18px 40px rgba(0,0,0,.35);
+      --radius: 18px;
 
-.top-image {
-  width: 100%;
-  max-width: 400px;
-  height: 150px;
-  background: url("LOGO-03.png") no-repeat center center;
-  background-size: contain;
-  margin: 20px auto;
-}
+      /* ajuste aqui para a cor oficial se quiser */
+      --brand: #19c37d;     /* verde */
+      --brand2:#00d4ff;     /* azul/ciano */
+      --danger:#ff5a5f;
+      --warnbg: rgba(255, 193, 7, .14);
+      --warnbd: rgba(255, 193, 7, .35);
+      --warntext: #ffd36a;
+      --okbg: rgba(25, 195, 125, .12);
+      --okbd: rgba(25, 195, 125, .30);
+    }
 
-.container {
-  background: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  width: 100%;
-  max-width: 420px;
-}
+    *{ box-sizing: border-box; }
 
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #333;
-}
+    html, body{
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 500px at 20% 10%, rgba(25,195,125,.25), transparent 55%),
+        radial-gradient(900px 420px at 85% 30%, rgba(0,212,255,.22), transparent 55%),
+        radial-gradient(700px 380px at 55% 95%, rgba(25,195,125,.10), transparent 55%),
+        var(--bg);
+    }
 
-label {
-  font-weight: bold;
-  margin-top: 10px;
-  display: block;
-}
+    .page{
+      min-height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 22px 12px;
+    }
 
-input {
-  width: 100%;
-  padding: 7px;
-  margin-top: 5px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 16px;
-}
+    .wrap{
+      width: 100%;
+      max-width: 980px;
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 18px;
+      align-items: stretch;
+    }
 
-button {
-  background: #28a745;
-  color: #fff;
-  border: none;
-  padding: 12px;
-  width: 100%;
-  border-radius: 6px;
-  font-size: 18px;
-  cursor: pointer;
-}
+    /* topo */
+    .brandbar{
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 4px;
+      opacity: .98;
+    }
 
-button:hover {
-  background: #218838;
-}
+    .brandbar .logo{
+      width: 170px;
+      height: 56px;
+      background: url("LOGO-03.png") no-repeat center center;
+      background-size: contain;
+      filter: drop-shadow(0 8px 22px rgba(0,0,0,.35));
+    }
 
-.resultado {
-  margin-top: 20px;
-  padding: 15px;
-  background: #f9f9f9;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-}
+    /* cards */
+    .card{
+      background: linear-gradient(180deg, var(--card2), var(--card));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 18px;
+      overflow: hidden;
+      position: relative;
+    }
 
-.erro {
-  color: red;
-  font-weight: bold;
-  margin-top: 10px;
-  text-align: center;
-}
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-1px;
+      background:
+        linear-gradient(120deg, rgba(25,195,125,.22), transparent 35%),
+        linear-gradient(240deg, rgba(0,212,255,.18), transparent 40%);
+      pointer-events:none;
+      opacity:.55;
+    }
 
-.aviso-atencao {
-  background-color: #fff3cd;
-  border-left: 5px solid #ffa500;
-  padding: 12px;
-  margin-top: 15px;
-  color: #664d03;
-}
+    .card > *{ position: relative; z-index: 1; }
 
-#btnWhatsApp {
-  background-color: #25D366;
-  margin-top: 10px;
-  display: none;
-}
-</style>
+    .title{
+      display:flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .title h1{
+      font-size: 20px;
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+    .title p{
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .field{
+      display:flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .field label{
+      font-size: 12.5px;
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: .01em;
+    }
+
+    .control{
+      position: relative;
+    }
+
+    .control input{
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(10, 16, 30, .45);
+      color: var(--text);
+      padding: 12px 12px;
+      font-size: 15px;
+      outline: none;
+      transition: border .15s ease, transform .08s ease, background .15s ease, box-shadow .15s ease;
+    }
+
+    .control input::placeholder{
+      color: rgba(255,255,255,.38);
+    }
+
+    .control input:focus{
+      border-color: rgba(25,195,125,.65);
+      box-shadow: 0 0 0 4px rgba(25,195,125,.18);
+      background: rgba(10, 16, 30, .58);
+      transform: translateY(-1px);
+    }
+
+    .hint{
+      grid-column: 1 / -1;
+      margin-top: 2px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+      color: var(--muted2);
+      font-size: 12.5px;
+      line-height: 1.35;
+    }
+
+    .actions{
+      grid-column: 1 / -1;
+      display:flex;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .btn{
+      width: 100%;
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .08s ease, filter .15s ease, box-shadow .15s ease;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      user-select:none;
+    }
+
+    .btn-primary{
+      color: #062113;
+      background: linear-gradient(90deg, var(--brand), #52e3b0);
+      box-shadow: 0 14px 28px rgba(25,195,125,.18);
+    }
+    .btn-primary:hover{ filter: brightness(1.03); }
+    .btn-primary:active{ transform: translateY(1px); }
+
+    .btn-wa{
+      display:none;
+      background: linear-gradient(90deg, #25D366, #5ef09a);
+      color: #062113;
+      box-shadow: 0 14px 28px rgba(37,211,102,.16);
+    }
+    .btn-wa:hover{ filter: brightness(1.03); }
+    .btn-wa:active{ transform: translateY(1px); }
+
+    .error{
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,90,95,.35);
+      background: rgba(255,90,95,.12);
+      color: #ffd3d5;
+      font-weight: 600;
+      display:none;
+    }
+
+    /* painel resultado */
+    .resultbox{
+      height: 100%;
+      display:flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      color: var(--muted);
+      font-size: 12.5px;
+      width: fit-content;
+    }
+
+    .panel{
+      padding: 14px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+    }
+
+    .kpis{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .kpi{
+      padding: 12px 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+    }
+    .kpi .label{
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .kpi .value{
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .highlight{
+      border: 1px solid var(--okbd);
+      background: var(--okbg);
+    }
+
+    .aviso{
+      margin-top: 12px;
+      padding: 12px 12px;
+      border-radius: 16px;
+      border: 1px solid var(--warnbd);
+      background: var(--warnbg);
+      color: var(--warntext);
+      font-size: 12.5px;
+      line-height: 1.35;
+    }
+
+    .mutedline{
+      color: var(--muted2);
+      font-size: 12.5px;
+      line-height: 1.35;
+      margin: 0;
+    }
+
+    /* responsivo */
+    @media (max-width: 900px){
+      .wrap{
+        grid-template-columns: 1fr;
+        max-width: 520px;
+      }
+    }
+    @media (max-width: 460px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 
 <body>
+  <div class="page">
+    <div class="wrap">
 
-<div class="top-image"></div>
+      <div class="brandbar">
+        <div class="logo" aria-label="Sunbolt Flex"></div>
+      </div>
 
-<div class="container">
-<h2>Simule seu Desconto</h2>
+      <!-- FORM -->
+      <div class="card">
+        <div class="title">
+          <h1>Simule seu desconto</h1>
+          <p>Preencha os dados da fatura e veja uma estimativa de economia mensal e anual.</p>
+        </div>
 
-<label>Iluminação Pública (R$):</label>
-<input type="number" id="iluminacao" min="0" step="0.01">
+        <div class="grid">
+          <div class="field">
+            <label for="iluminacao">Iluminação Pública (R$)</label>
+            <div class="control">
+              <input type="number" id="iluminacao" min="0" step="0.01" placeholder="Ex.: 25,90">
+            </div>
+          </div>
 
-<label>Consumo Mensal (kWh):</label>
-<input type="number" id="consumo" min="0" step="0.01">
+          <div class="field">
+            <label for="consumo">Consumo Mensal (kWh)</label>
+            <div class="control">
+              <input type="number" id="consumo" min="0" step="0.01" placeholder="Ex.: 420">
+            </div>
+          </div>
 
-<label>Tarifa TE (R$/kWh):</label>
-<input type="number" id="tarifaTE" min="0" step="0.00001">
+          <div class="field">
+            <label for="tarifaTE">Tarifa TE (R$/kWh)</label>
+            <div class="control">
+              <input type="number" id="tarifaTE" min="0" step="0.00001" placeholder="Ex.: 0,31234">
+            </div>
+          </div>
 
-<label>Tarifa TUSD (R$/kWh):</label>
-<input type="number" id="tarifaTUSD" min="0" step="0.00001">
+          <div class="field">
+            <label for="tarifaTUSD">Tarifa TUSD (R$/kWh)</label>
+            <div class="control">
+              <input type="number" id="tarifaTUSD" min="0" step="0.00001" placeholder="Ex.: 0,42111">
+            </div>
+          </div>
 
-<label>Adicional de Bandeira (R$/kWh):</label>
-<input type="number" id="adcBandeira" min="0" step="0.00001">
+          <div class="field">
+            <label for="adcBandeira">Adicional Bandeira (R$/kWh)</label>
+            <div class="control">
+              <input type="number" id="adcBandeira" min="0" step="0.00001" placeholder="Ex.: 0,02987">
+            </div>
+          </div>
 
-<label>Desconto Manual (%) - Opcional:</label>
-<input type="number" id="descontoManual" min="0" max="100" step="0.01">
+          <div class="field">
+            <label for="descontoManual">Desconto Manual (%) (opcional)</label>
+            <div class="control">
+              <input type="number" id="descontoManual" min="0" max="100" step="0.01" placeholder="Ex.: 20">
+            </div>
+          </div>
 
-<button onclick="calcular()">Calcular</button>
+          <div class="hint">
+            💡 Dica: Se você não preencher o desconto manual, o sistema aplica automaticamente conforme a faixa do valor da fatura.
+          </div>
 
-<div class="resultado" id="resultado"></div>
-<div class="erro" id="erro"></div>
+          <div class="actions">
+            <button class="btn btn-primary" onclick="calcular()">⚡ Calcular</button>
+          </div>
 
-<button id="btnWhatsApp" onclick="enviarWhatsApp()">📲 Enviar resultado pelo WhatsApp</button>
-</div>
+          <div class="error" id="erro"></div>
+        </div>
+      </div>
 
-<script>
+      <!-- RESULTADO -->
+      <div class="card resultbox">
+        <div class="title">
+          <h1>Resultado</h1>
+          <p>Você verá aqui a estimativa após calcular.</p>
+        </div>
 
-let valorTotal = 0;
+        <div class="badge">✅ FATURA SUNBOLT FLEX</div>
 
-function calcular() {
+        <div class="panel" id="resultado">
+          <p class="mutedline">Preencha o formulário e clique em <strong>Calcular</strong>.</p>
+        </div>
 
-const iluminacao = parseFloat(document.getElementById('iluminacao').value) || 0;
-const consumo = parseFloat(document.getElementById('consumo').value) || 0;
-const tarifaTE = parseFloat(document.getElementById('tarifaTE').value) || 0;
-const tarifaTUSD = parseFloat(document.getElementById('tarifaTUSD').value) || 0;
-const adcBandeira = parseFloat(document.getElementById('adcBandeira').value) || 0;
-const descontoManualInput = parseFloat(document.getElementById('descontoManual').value);
+        <button class="btn btn-wa" id="btnWhatsApp" onclick="enviarWhatsApp()">📲 Enviar pelo WhatsApp</button>
+      </div>
 
-if (consumo <= 0 || tarifaTE <= 0 || tarifaTUSD <= 0) {
-  document.getElementById('erro').textContent =
-    "⚠️ Preencha todos os campos corretamente.";
-  return;
-}
+    </div>
+  </div>
 
-document.getElementById('erro').textContent = "";
+  <script>
+    let valorTotal = 0;
 
-/* ===============================
-   ✅ LÓGICA IGUAL EXCEL
-=================================*/
+    function calcular() {
+      const iluminacao = parseFloat(document.getElementById('iluminacao').value) || 0;
+      const consumo = parseFloat(document.getElementById('consumo').value) || 0;
+      const tarifaTE = parseFloat(document.getElementById('tarifaTE').value) || 0;
+      const tarifaTUSD = parseFloat(document.getElementById('tarifaTUSD').value) || 0;
+      const adcBandeira = parseFloat(document.getElementById('adcBandeira').value) || 0;
+      const descontoManualInput = parseFloat(document.getElementById('descontoManual').value);
 
-// 🔹 Energia compensável (BASE DO DESCONTO)
-const baseDesconto = consumo * (tarifaTE + tarifaTUSD);
+      const erroEl = document.getElementById('erro');
+      erroEl.style.display = "none";
+      erroEl.textContent = "";
 
-// 🔹 Energia total (inclui bandeira)
-const valorEnergiaTotal = baseDesconto + (consumo * adcBandeira);
+      if (consumo <= 0 || tarifaTE <= 0 || tarifaTUSD <= 0) {
+        erroEl.textContent = "⚠️ Preencha Consumo, Tarifa TE e Tarifa TUSD corretamente.";
+        erroEl.style.display = "block";
+        return;
+      }
 
-// 🔹 Valor total da fatura
-valorTotal = valorEnergiaTotal + iluminacao;
+      /* ===============================
+         ✅ LÓGICA IGUAL EXCEL
+      ================================*/
 
-/* ===============================
-   DESCONTO
-=================================*/
+      // 🔹 Energia compensável (BASE DO DESCONTO)
+      const baseDesconto = consumo * (tarifaTE + tarifaTUSD);
 
-let desconto = 0;
+      // 🔹 Energia total (inclui bandeira)
+      const valorEnergiaTotal = baseDesconto + (consumo * adcBandeira);
 
-if (!isNaN(descontoManualInput) && descontoManualInput > 0 && descontoManualInput <= 100) {
-  desconto = descontoManualInput / 100;
-} else {
-  if (valorTotal >= 300 && valorTotal < 1000) desconto = 0.15;
-  else if (valorTotal >= 1000 && valorTotal < 2000) desconto = 0.20;
-  else if (valorTotal >= 2000) desconto = 0.25;
-}
+      // 🔹 Valor total da fatura
+      valorTotal = valorEnergiaTotal + iluminacao;
 
-// ✅ desconto aplicado somente na energia compensável
-const descontoMensal = baseDesconto * desconto;
-const descontoAnual = descontoMensal * 12;
-const valorComDesconto = valorTotal - descontoMensal;
+      /* ===============================
+         DESCONTO
+      ================================*/
+      let desconto = 0;
 
-/* ===============================
-   RESULTADO
-=================================*/
+      if (!isNaN(descontoManualInput) && descontoManualInput > 0 && descontoManualInput <= 100) {
+        desconto = descontoManualInput / 100;
+      } else {
+        if (valorTotal >= 300 && valorTotal < 1000) desconto = 0.15;
+        else if (valorTotal >= 1000 && valorTotal < 2000) desconto = 0.20;
+        else if (valorTotal >= 2000) desconto = 0.25;
+      }
 
-const formatar = v =>
-  v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      // ✅ desconto aplicado somente na energia compensável
+      const descontoMensal = baseDesconto * desconto;
+      const descontoAnual = descontoMensal * 12;
+      const valorComDesconto = valorTotal - descontoMensal;
 
-document.getElementById('resultado').innerHTML = `
-<p><strong>Valor estimado da fatura:</strong> ${formatar(valorTotal)}</p>
-<p style="text-align:center;"><strong style="color:green;">FATURA SUNBOLT FLEX</strong></p>
-<p><strong>Valor da fatura com desconto:</strong> ${formatar(valorComDesconto)}</p>
-<p><strong>Desconto mensal previsto:</strong> ${formatar(descontoMensal)}</p>
-<p><strong>Desconto anual previsto:</strong> ${formatar(descontoAnual)}</p>
+      const formatar = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-<div class="aviso-atencao">
-⚠️ Esta é uma simulação. Os valores podem variar conforme consumo,
-bandeiras tarifárias e condições contratuais.
-</div>
-`;
+      document.getElementById('resultado').innerHTML = `
+        <div class="kpis">
+          <div class="kpi">
+            <div class="label">Valor estimado da fatura</div>
+            <div class="value">${formatar(valorTotal)}</div>
+          </div>
+          <div class="kpi highlight">
+            <div class="label">Fatura com desconto</div>
+            <div class="value">${formatar(valorComDesconto)}</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Desconto mensal previsto</div>
+            <div class="value">${formatar(descontoMensal)}</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Desconto anual previsto</div>
+            <div class="value">${formatar(descontoAnual)}</div>
+          </div>
+        </div>
 
-if (valorTotal >= 300) {
-  document.getElementById('btnWhatsApp').style.display = 'block';
-}
+        <div class="aviso">
+          ⚠️ Esta é uma simulação. Os valores podem variar conforme consumo, bandeiras tarifárias e condições contratuais.
+        </div>
+      `;
 
-}
+      const btn = document.getElementById('btnWhatsApp');
+      if (valorTotal >= 300) btn.style.display = 'flex';
+      else btn.style.display = 'none';
+    }
 
-/* ===============================
-WHATSAPP
-=================================*/
-
-function enviarWhatsApp() {
-const texto = document.getElementById('resultado').innerText;
-const telefone = "5585999416424";
-const msg = encodeURIComponent("Resultado do simulador:\n\n" + texto);
-window.open(`https://wa.me/${telefone}?text=${msg}`, "_blank");
-}
-
-</script>
-
+    function enviarWhatsApp() {
+      const texto = document.getElementById('resultado').innerText;
+      const telefone = "5585999416424";
+      const msg = encodeURIComponent("Resultado do simulador:\n\n" + texto);
+      window.open(`https://wa.me/${telefone}?text=${msg}`, "_blank");
+    }
+  </script>
 </body>
 </html>
