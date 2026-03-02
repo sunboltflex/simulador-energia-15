@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>Simulador de Desconto | Sunbolt Flex</title>
 
+  <!-- Fonte moderna -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -20,7 +21,9 @@
       --muted2: rgba(255,255,255,.55);
       --shadow: 0 18px 40px rgba(0,0,0,.35);
       --radius: 18px;
-      --brand: #19c37d;
+
+      /* ajuste aqui se quiser: */
+      --brand: #19c37d;     /* verde */
       --danger:#ff5a5f;
       --warnbg: rgba(255, 193, 7, .14);
       --warnbd: rgba(255, 193, 7, .35);
@@ -101,15 +104,6 @@
     }
     .card > *{ position: relative; z-index: 1; }
 
-    .result-logo{
-      width:160px;
-      height:50px;
-      margin: 0 auto 12px auto;
-      background:url("LOGO-03.png") no-repeat center center;
-      background-size:contain;
-      filter: drop-shadow(0 6px 18px rgba(0,0,0,.35));
-    }
-
     .title{
       display:flex;
       flex-direction: column;
@@ -139,7 +133,6 @@
       flex-direction: column;
       gap: 7px;
     }
-
     .field label{
       font-size: 12.5px;
       color: var(--muted);
@@ -153,9 +146,19 @@
       border: 1px solid rgba(255,255,255,.14);
       background: rgba(10, 16, 30, .45);
       color: var(--text);
-      padding: 12px;
+      padding: 12px 12px;
       font-size: 15px;
       outline: none;
+      transition: border .15s ease, transform .08s ease, background .15s ease, box-shadow .15s ease;
+    }
+    .control input::placeholder{
+      color: rgba(255,255,255,.38);
+    }
+    .control input:focus{
+      border-color: rgba(25,195,125,.65);
+      box-shadow: 0 0 0 4px rgba(25,195,125,.18);
+      background: rgba(10, 16, 30, .58);
+      transform: translateY(-1px);
     }
 
     .hint{
@@ -167,6 +170,7 @@
       background: rgba(0,0,0,.18);
       color: var(--muted2);
       font-size: 12.5px;
+      line-height: 1.35;
     }
 
     .actions{
@@ -180,28 +184,82 @@
       width: 100%;
       border: 0;
       border-radius: 14px;
-      padding: 12px;
+      padding: 12px 14px;
       font-size: 15px;
       font-weight: 800;
       cursor: pointer;
+      transition: transform .08s ease, filter .15s ease, box-shadow .15s ease;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      user-select:none;
     }
-
     .btn-primary{
       color: #062113;
       background: linear-gradient(90deg, var(--brand), #52e3b0);
+      box-shadow: 0 14px 28px rgba(25,195,125,.18);
     }
+    .btn-primary:hover{ filter: brightness(1.03); }
+    .btn-primary:active{ transform: translateY(1px); }
 
     .btn-wa{
       display:none;
       background: linear-gradient(90deg, #25D366, #5ef09a);
       color: #062113;
-      margin-top: 12px;
+      box-shadow: 0 14px 28px rgba(37,211,102,.16);
+    }
+    .btn-wa:hover{ filter: brightness(1.03); }
+    .btn-wa:active{ transform: translateY(1px); }
+
+    .error{
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,90,95,.35);
+      background: rgba(255,90,95,.12);
+      color: #ffd3d5;
+      font-weight: 700;
+      display:none;
     }
 
     .resultbox{
+      height: 100%;
       display:flex;
       flex-direction: column;
       gap: 12px;
+    }
+
+    /* ✅ NOVO: logo dentro do card Resultado (só visual) */
+    .result-logo{
+      width: 170px;
+      height: 54px;
+      margin: 2px auto 2px auto;
+      background: url("LOGO-03.png") no-repeat center center;
+      background-size: contain;
+      filter: drop-shadow(0 8px 22px rgba(0,0,0,.35));
+      opacity: .98;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      color: var(--muted);
+      font-size: 12.5px;
+      width: fit-content;
+      font-weight: 700;
+    }
+
+    .panel{
+      padding: 14px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
     }
 
     .kpis{
@@ -212,22 +270,21 @@
     }
 
     .kpi{
-      padding: 12px;
+      padding: 12px 12px;
       border-radius: 16px;
       border: 1px solid rgba(255,255,255,.12);
       background: rgba(255,255,255,.06);
     }
-
     .kpi .label{
       font-size: 12px;
       color: var(--muted);
       margin-bottom: 6px;
       font-weight: 800;
     }
-
     .kpi .value{
       font-size: 16px;
       font-weight: 900;
+      letter-spacing: -0.02em;
     }
 
     .highlight{
@@ -237,16 +294,28 @@
 
     .aviso{
       margin-top: 12px;
-      padding: 12px;
+      padding: 12px 12px;
       border-radius: 16px;
       border: 1px solid var(--warnbd);
       background: var(--warnbg);
       color: var(--warntext);
       font-size: 12.5px;
+      line-height: 1.35;
+      font-weight: 600;
+    }
+
+    .mutedline{
+      color: var(--muted2);
+      font-size: 12.5px;
+      line-height: 1.35;
+      margin: 0;
     }
 
     @media (max-width: 900px){
-      .wrap{ grid-template-columns: 1fr; max-width: 520px; }
+      .wrap{
+        grid-template-columns: 1fr;
+        max-width: 520px;
+      }
     }
     @media (max-width: 460px){
       .grid{ grid-template-columns: 1fr; }
@@ -259,7 +328,7 @@
     <div class="wrap">
 
       <div class="brandbar">
-        <div class="logo"></div>
+        <div class="logo" aria-label="Sunbolt Flex"></div>
       </div>
 
       <!-- FORM -->
@@ -271,65 +340,75 @@
 
         <div class="grid">
           <div class="field">
-            <label>Iluminação Pública (R$)</label>
+            <label for="iluminacao">Iluminação Pública (R$)</label>
             <div class="control">
-              <input type="number" id="iluminacao">
+              <input type="number" id="iluminacao" min="0" step="0.01" placeholder="Ex.: 25,90">
             </div>
           </div>
 
           <div class="field">
-            <label>Consumo Mensal (kWh)</label>
+            <label for="consumo">Consumo Mensal (kWh)</label>
             <div class="control">
-              <input type="number" id="consumo">
+              <input type="number" id="consumo" min="0" step="0.01" placeholder="Ex.: 420">
             </div>
           </div>
 
           <div class="field">
-            <label>Tarifa TE (R$/kWh)</label>
+            <label for="tarifaTE">Tarifa TE (R$/kWh)</label>
             <div class="control">
-              <input type="number" id="tarifaTE">
+              <input type="number" id="tarifaTE" min="0" step="0.00001" placeholder="Ex.: 0,31234">
             </div>
           </div>
 
           <div class="field">
-            <label>Tarifa TUSD (R$/kWh)</label>
+            <label for="tarifaTUSD">Tarifa TUSD (R$/kWh)</label>
             <div class="control">
-              <input type="number" id="tarifaTUSD">
+              <input type="number" id="tarifaTUSD" min="0" step="0.00001" placeholder="Ex.: 0,42111">
             </div>
           </div>
 
           <div class="field">
-            <label>Adicional Bandeira (R$/kWh)</label>
+            <label for="adcBandeira">Adicional Bandeira (R$/kWh)</label>
             <div class="control">
-              <input type="number" id="adcBandeira">
+              <input type="number" id="adcBandeira" min="0" step="0.00001" placeholder="Ex.: 0,02987">
             </div>
           </div>
 
           <div class="field">
-            <label>Desconto Manual (%)</label>
+            <label for="descontoManual">Desconto Manual (%) (opcional)</label>
             <div class="control">
-              <input type="number" id="descontoManual">
+              <input type="number" id="descontoManual" min="0" max="100" step="0.01" placeholder="Ex.: 20">
             </div>
+          </div>
+
+          <div class="hint">
+            💡 Dica: Se você não preencher o desconto manual, o sistema aplica automaticamente conforme a faixa do valor da fatura.
           </div>
 
           <div class="actions">
             <button class="btn btn-primary" onclick="calcular()">⚡ Calcular</button>
           </div>
+
+          <div class="error" id="erro"></div>
         </div>
       </div>
 
       <!-- RESULTADO -->
       <div class="card resultbox">
 
-        <!-- LOGO DENTRO DO RESULTADO -->
-        <div class="result-logo"></div>
+        <!-- ✅ LOGO DENTRO DO QUADRO DE RESULTADO -->
+        <div class="result-logo" aria-label="Logo Sunbolt Flex"></div>
 
         <div class="title">
           <h1>Resultado</h1>
           <p>Você verá aqui a estimativa após calcular.</p>
         </div>
 
-        <div id="resultado"></div>
+        <div class="badge">✅ FATURA SUNBOLT FLEX</div>
+
+        <div class="panel" id="resultado">
+          <p class="mutedline">Preencha o formulário e clique em <strong>Calcular</strong>.</p>
+        </div>
 
         <button class="btn btn-wa" id="btnWhatsApp" onclick="enviarWhatsApp()">📲 Enviar pelo WhatsApp</button>
       </div>
@@ -338,8 +417,152 @@
   </div>
 
   <script>
-    // 🔒 TODA SUA LÓGICA ORIGINAL PERMANECE IGUAL
-  </script>
+    let valorTotal = 0;
 
+    function calcular() {
+      const iluminacao = parseFloat(document.getElementById('iluminacao').value) || 0;
+      const consumo = parseFloat(document.getElementById('consumo').value) || 0;
+      const tarifaTE = parseFloat(document.getElementById('tarifaTE').value) || 0;
+      const tarifaTUSD = parseFloat(document.getElementById('tarifaTUSD').value) || 0;
+      const adcBandeira = parseFloat(document.getElementById('adcBandeira').value) || 0;
+      const descontoManualInput = parseFloat(document.getElementById('descontoManual').value);
+
+      const erroEl = document.getElementById('erro');
+      erroEl.style.display = "none";
+      erroEl.textContent = "";
+
+      if (consumo <= 0 || tarifaTE <= 0 || tarifaTUSD <= 0) {
+        erroEl.textContent = "⚠️ Preencha Consumo, Tarifa TE e Tarifa TUSD corretamente.";
+        erroEl.style.display = "block";
+        document.getElementById('btnWhatsApp').style.display = 'none';
+        return;
+      }
+
+      /* ===============================
+         ✅ LÓGICA IGUAL EXCEL
+      ================================*/
+
+      // 🔹 Energia compensável (BASE DO DESCONTO)
+      const baseDesconto = consumo * (tarifaTE + tarifaTUSD);
+
+      // 🔹 Energia total (inclui bandeira)
+      const valorEnergiaTotal = baseDesconto + (consumo * adcBandeira);
+
+      // 🔹 Valor total da fatura
+      valorTotal = valorEnergiaTotal + iluminacao;
+
+      /* ===============================
+         DESCONTO
+      ================================*/
+      let desconto = 0;
+
+      if (!isNaN(descontoManualInput) && descontoManualInput > 0 && descontoManualInput <= 100) {
+        desconto = descontoManualInput / 100;
+      } else {
+        if (valorTotal >= 300 && valorTotal < 1000) desconto = 0.15;
+        else if (valorTotal >= 1000 && valorTotal < 2000) desconto = 0.20;
+        else if (valorTotal >= 2000) desconto = 0.25;
+      }
+
+      // ✅ desconto aplicado somente na energia compensável
+      const descontoMensal = baseDesconto * desconto;
+      const descontoAnual = descontoMensal * 12;
+      const valorComDesconto = valorTotal - descontoMensal;
+
+      const formatar = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+      document.getElementById('resultado').innerHTML = `
+        <div class="kpis">
+          <div class="kpi">
+            <div class="label">Valor estimado da fatura</div>
+            <div class="value">${formatar(valorTotal)}</div>
+          </div>
+          <div class="kpi highlight">
+            <div class="label">Fatura com desconto</div>
+            <div class="value">${formatar(valorComDesconto)}</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Economia mensal estimada</div>
+            <div class="value">${formatar(descontoMensal)}</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Economia anual estimada</div>
+            <div class="value">${formatar(descontoAnual)}</div>
+          </div>
+        </div>
+
+        <div class="aviso">
+          ⚠️ Esta é uma simulação. Os valores podem variar conforme consumo, bandeiras tarifárias e condições contratuais.
+        </div>
+      `;
+
+      const btn = document.getElementById('btnWhatsApp');
+      btn.style.display = (valorTotal >= 300) ? 'flex' : 'none';
+    }
+
+    function enviarWhatsApp() {
+      const formatar = (v) =>
+        v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+      // Recalcula para garantir que o texto sempre reflita os inputs atuais
+      const iluminacao = parseFloat(document.getElementById('iluminacao').value) || 0;
+      const consumo = parseFloat(document.getElementById('consumo').value) || 0;
+      const tarifaTE = parseFloat(document.getElementById('tarifaTE').value) || 0;
+      const tarifaTUSD = parseFloat(document.getElementById('tarifaTUSD').value) || 0;
+      const adcBandeira = parseFloat(document.getElementById('adcBandeira').value) || 0;
+      const descontoManualInput = parseFloat(document.getElementById('descontoManual').value);
+
+      if (consumo <= 0 || tarifaTE <= 0 || tarifaTUSD <= 0) {
+        const erroEl = document.getElementById('erro');
+        erroEl.textContent = "⚠️ Preencha Consumo, Tarifa TE e Tarifa TUSD corretamente.";
+        erroEl.style.display = "block";
+        return;
+      }
+
+      const baseDesconto = consumo * (tarifaTE + tarifaTUSD);
+      const valorEnergiaTotal = baseDesconto + (consumo * adcBandeira);
+      const total = valorEnergiaTotal + iluminacao;
+
+      let desconto = 0;
+      if (!isNaN(descontoManualInput) && descontoManualInput > 0 && descontoManualInput <= 100) {
+        desconto = descontoManualInput / 100;
+      } else {
+        if (total >= 300 && total < 1000) desconto = 0.15;
+        else if (total >= 1000 && total < 2000) desconto = 0.20;
+        else if (total >= 2000) desconto = 0.25;
+      }
+
+      const descontoMensal = baseDesconto * desconto;
+      const descontoAnual = descontoMensal * 12;
+      const comDesconto = total - descontoMensal;
+
+      // Texto elegante (WhatsApp aceita *negrito* e linhas)
+      const mensagem =
+`🌞 *SIMULAÇÃO SUNBOLT FLEX*
+
+💡 *Valor estimado da fatura atual:*  
+${formatar(total)}
+
+⚡ *Valor com desconto Sunbolt Flex:*  
+${formatar(comDesconto)}
+
+📉 *Economia mensal estimada:*  
+${formatar(descontoMensal)}
+
+📆 *Economia anual estimada:*  
+${formatar(descontoAnual)}
+
+━━━━━━━━━━━━━━━━━━━━━━
+✨ Energia limpa, economia todo mês.
+📲 Quer ativar sua economia agora?
+
+⚠️ Esta é uma simulação. Os valores podem variar conforme consumo e bandeiras tarifárias.`;
+
+      // ✅ Troque pelo telefone do cliente (ou adapte para pegar de um input)
+      const telefone = "5585999416424";
+      const msg = encodeURIComponent(mensagem);
+      window.open(`https://wa.me/${telefone}?text=${msg}`, "_blank");
+    }
+  </script>
 </body>
 </html>
