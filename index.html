@@ -444,6 +444,7 @@
 
       // 🔹 Energia compensável (BASE DO DESCONTO)
       const baseDesconto = consumo * (tarifaTE + tarifaTUSD);
+        const baseCompensaveltarifa = consumo * ((tarifaTE + tarifaTUSD)*0,6714646730546488);
 
       // 🔹 Energia total (inclui bandeira)
       const valorEnergiaTotal = baseDesconto + (consumo * adcBandeira);
@@ -532,7 +533,7 @@
         else if (total >= 2000) desconto = 0.25;
       }
 
-      const descontoMensal = baseDesconto * desconto;
+      const descontoMensal = baseCompensaveltarifa * desconto;
       const descontoAnual = descontoMensal * 12;
       const comDesconto = total - descontoMensal;
 
