@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>Simulador de Desconto | Sunbolt Flex</title>
 
-  <!-- Fonte moderna -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -21,9 +20,7 @@
       --muted2: rgba(255,255,255,.55);
       --shadow: 0 18px 40px rgba(0,0,0,.35);
       --radius: 18px;
-
-      /* ajuste aqui se quiser: */
-      --brand: #19c37d;     /* verde */
+      --brand: #19c37d;
       --danger:#ff5a5f;
       --warnbg: rgba(255, 193, 7, .14);
       --warnbd: rgba(255, 193, 7, .35);
@@ -102,6 +99,7 @@
       pointer-events:none;
       opacity:.55;
     }
+
     .card > *{ position: relative; z-index: 1; }
 
     .title{
@@ -110,11 +108,13 @@
       gap: 6px;
       margin-bottom: 14px;
     }
+
     .title h1{
       font-size: 20px;
       margin: 0;
       letter-spacing: -0.02em;
     }
+
     .title p{
       margin: 0;
       color: var(--muted);
@@ -133,6 +133,7 @@
       flex-direction: column;
       gap: 7px;
     }
+
     .field label{
       font-size: 12.5px;
       color: var(--muted);
@@ -149,16 +150,16 @@
       padding: 12px 12px;
       font-size: 15px;
       outline: none;
-      transition: border .15s ease, transform .08s ease, background .15s ease, box-shadow .15s ease;
     }
+
     .control input::placeholder{
       color: rgba(255,255,255,.38);
     }
+
     .control input:focus{
       border-color: rgba(25,195,125,.65);
       box-shadow: 0 0 0 4px rgba(25,195,125,.18);
       background: rgba(10, 16, 30, .58);
-      transform: translateY(-1px);
     }
 
     .hint{
@@ -188,20 +189,17 @@
       font-size: 15px;
       font-weight: 800;
       cursor: pointer;
-      transition: transform .08s ease, filter .15s ease, box-shadow .15s ease;
       display:flex;
       align-items:center;
       justify-content:center;
       gap: 10px;
-      user-select:none;
     }
+
     .btn-primary{
       color: #062113;
       background: linear-gradient(90deg, var(--brand), #52e3b0);
       box-shadow: 0 14px 28px rgba(25,195,125,.18);
     }
-    .btn-primary:hover{ filter: brightness(1.03); }
-    .btn-primary:active{ transform: translateY(1px); }
 
     .btn-wa{
       display:none;
@@ -209,8 +207,6 @@
       color: #062113;
       box-shadow: 0 14px 28px rgba(37,211,102,.16);
     }
-    .btn-wa:hover{ filter: brightness(1.03); }
-    .btn-wa:active{ transform: translateY(1px); }
 
     .error{
       margin-top: 10px;
@@ -230,7 +226,6 @@
       gap: 12px;
     }
 
-    /* ✅ NOVO: logo dentro do card Resultado (só visual) */
     .result-logo{
       width: 170px;
       height: 54px;
@@ -275,12 +270,14 @@
       border: 1px solid rgba(255,255,255,.12);
       background: rgba(255,255,255,.06);
     }
+
     .kpi .label{
       font-size: 12px;
       color: var(--muted);
       margin-bottom: 6px;
       font-weight: 800;
     }
+
     .kpi .value{
       font-size: 16px;
       font-weight: 900;
@@ -317,6 +314,7 @@
         max-width: 520px;
       }
     }
+
     @media (max-width: 460px){
       .grid{ grid-template-columns: 1fr; }
     }
@@ -331,7 +329,6 @@
         <div class="logo" aria-label="Sunbolt Flex"></div>
       </div>
 
-      <!-- FORM -->
       <div class="card">
         <div class="title">
           <h1>Simule seu desconto</h1>
@@ -393,10 +390,7 @@
         </div>
       </div>
 
-      <!-- RESULTADO -->
       <div class="card resultbox">
-
-        <!-- ✅ LOGO DENTRO DO QUADRO DE RESULTADO -->
         <div class="result-logo" aria-label="Logo Sunbolt Flex"></div>
 
         <div class="title">
@@ -419,76 +413,103 @@
   <script>
     let valorTotal = 0;
 
-    function calcular() {
-      const iluminacao = parseFloat(document.getElementById('iluminacao').value) || 0;
-      const consumo = parseFloat(document.getElementById('consumo').value) || 0;
-      const tarifaTE = parseFloat(document.getElementById('tarifaTE').value) || 0;
-      const tarifaTUSD = parseFloat(document.getElementById('tarifaTUSD').value) || 0;
-      const adcBandeira = parseFloat(document.getElementById('adcBandeira').value) || 0;
-      const descontoManualInput = parseFloat(document.getElementById('descontoManual').value);
+    function obterDados() {
+      return {
+        iluminacao: parseFloat(document.getElementById('iluminacao').value) || 0,
+        consumo: parseFloat(document.getElementById('consumo').value) || 0,
+        tarifaTE: parseFloat(document.getElementById('tarifaTE').value) || 0,
+        tarifaTUSD: parseFloat(document.getElementById('tarifaTUSD').value) || 0,
+        adcBandeira: parseFloat(document.getElementById('adcBandeira').value) || 0,
+        descontoManualInput: parseFloat(document.getElementById('descontoManual').value)
+      };
+    }
 
+    function calcularValores() {
+      const {
+        iluminacao,
+        consumo,
+        tarifaTE,
+        tarifaTUSD,
+        adcBandeira,
+        descontoManualInput
+      } = obterDados();
+
+      if (consumo <= 0 || tarifaTE <= 0 || tarifaTUSD <= 0) {
+        return null;
+      }
+
+      const baseDesconto = consumo * (tarifaTE + tarifaTUSD);
+
+      const baseCompensavelTarifa = baseDesconto * 0.6714646730546488;
+
+      const valorEnergiaTotal = baseDesconto + (consumo * adcBandeira);
+
+      const total = valorEnergiaTotal + iluminacao;
+
+      let desconto = 0;
+
+      if (!isNaN(descontoManualInput) && descontoManualInput > 0 && descontoManualInput <= 100) {
+        desconto = descontoManualInput / 100;
+      } else {
+        if (total >= 300 && total < 1000) desconto = 0.15;
+        else if (total >= 1000 && total < 2000) desconto = 0.20;
+        else if (total >= 2000) desconto = 0.25;
+      }
+
+      const descontoMensal = baseCompensavelTarifa * desconto;
+      const descontoAnual = descontoMensal * 12;
+      const valorComDesconto = total - descontoMensal;
+
+      return {
+        total,
+        desconto,
+        descontoMensal,
+        descontoAnual,
+        valorComDesconto
+      };
+    }
+
+    function calcular() {
       const erroEl = document.getElementById('erro');
       erroEl.style.display = "none";
       erroEl.textContent = "";
 
-      if (consumo <= 0 || tarifaTE <= 0 || tarifaTUSD <= 0) {
+      const resultado = calcularValores();
+
+      if (!resultado) {
         erroEl.textContent = "⚠️ Preencha Consumo, Tarifa TE e Tarifa TUSD corretamente.";
         erroEl.style.display = "block";
         document.getElementById('btnWhatsApp').style.display = 'none';
         return;
       }
 
-      /* ===============================
-         ✅ LÓGICA IGUAL EXCEL
-      ================================*/
+      valorTotal = resultado.total;
 
-      // 🔹 Energia compensável (BASE DO DESCONTO)
-      const baseDesconto = consumo * (tarifaTE + tarifaTUSD);
-        const baseCompensaveltarifa = baseDesconto * 0,6714646730546488);
-
-      // 🔹 Energia total (inclui bandeira)
-      const valorEnergiaTotal = baseDesconto + (consumo * adcBandeira);
-
-      // 🔹 Valor total da fatura
-      valorTotal = valorEnergiaTotal + iluminacao;
-
-      /* ===============================
-         DESCONTO
-      ================================*/
-      let desconto = 0;
-
-      if (!isNaN(descontoManualInput) && descontoManualInput > 0 && descontoManualInput <= 100) {
-        desconto = descontoManualInput / 100;
-      } else {
-        if (valorTotal >= 300 && valorTotal < 1000) desconto = 0.15;
-        else if (valorTotal >= 1000 && valorTotal < 2000) desconto = 0.20;
-        else if (valorTotal >= 2000) desconto = 0.25;
-      }
-
-      // ✅ desconto aplicado somente na energia compensável
-      const descontoMensal = baseCompensaveltarifa * desconto;
-      const descontoAnual = descontoMensal * 12;
-      const valorComDesconto = valorTotal - descontoMensal;
-
-      const formatar = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      const formatar = v => v.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      });
 
       document.getElementById('resultado').innerHTML = `
         <div class="kpis">
           <div class="kpi">
             <div class="label">Valor estimado da fatura</div>
-            <div class="value">${formatar(valorTotal)}</div>
+            <div class="value">${formatar(resultado.total)}</div>
           </div>
+
           <div class="kpi highlight">
             <div class="label">Fatura com desconto</div>
-            <div class="value">${formatar(valorComDesconto)}</div>
+            <div class="value">${formatar(resultado.valorComDesconto)}</div>
           </div>
+
           <div class="kpi">
             <div class="label">Economia mensal estimada</div>
-            <div class="value">${formatar(descontoMensal)}</div>
+            <div class="value">${formatar(resultado.descontoMensal)}</div>
           </div>
+
           <div class="kpi">
             <div class="label">Economia anual estimada</div>
-            <div class="value">${formatar(descontoAnual)}</div>
+            <div class="value">${formatar(resultado.descontoAnual)}</div>
           </div>
         </div>
 
@@ -498,60 +519,41 @@
       `;
 
       const btn = document.getElementById('btnWhatsApp');
-      btn.style.display = (valorTotal >= 300) ? 'flex' : 'none';
+      btn.style.display = (resultado.total >= 300) ? 'flex' : 'none';
     }
 
     function enviarWhatsApp() {
-      const formatar = (v) =>
-        v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      const erroEl = document.getElementById('erro');
+      erroEl.style.display = "none";
+      erroEl.textContent = "";
 
-      // Recalcula para garantir que o texto sempre reflita os inputs atuais
-      const iluminacao = parseFloat(document.getElementById('iluminacao').value) || 0;
-      const consumo = parseFloat(document.getElementById('consumo').value) || 0;
-      const tarifaTE = parseFloat(document.getElementById('tarifaTE').value) || 0;
-      const tarifaTUSD = parseFloat(document.getElementById('tarifaTUSD').value) || 0;
-      const adcBandeira = parseFloat(document.getElementById('adcBandeira').value) || 0;
-      const descontoManualInput = parseFloat(document.getElementById('descontoManual').value);
+      const resultado = calcularValores();
 
-      if (consumo <= 0 || tarifaTE <= 0 || tarifaTUSD <= 0) {
-        const erroEl = document.getElementById('erro');
+      if (!resultado) {
         erroEl.textContent = "⚠️ Preencha Consumo, Tarifa TE e Tarifa TUSD corretamente.";
         erroEl.style.display = "block";
         return;
       }
 
-      const baseDesconto = consumo * (tarifaTE + tarifaTUSD);
-      const valorEnergiaTotal = baseDesconto + (consumo * adcBandeira);
-      const total = valorEnergiaTotal + iluminacao;
+      const formatar = v => v.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      });
 
-      let desconto = 0;
-      if (!isNaN(descontoManualInput) && descontoManualInput > 0 && descontoManualInput <= 100) {
-        desconto = descontoManualInput / 100;
-      } else {
-        if (total >= 300 && total < 1000) desconto = 0.15;
-        else if (total >= 1000 && total < 2000) desconto = 0.20;
-        else if (total >= 2000) desconto = 0.25;
-      }
-
-      const descontoMensal = baseCompensaveltarifa * desconto;
-      const descontoAnual = descontoMensal * 12;
-      const comDesconto = total - descontoMensal;
-
-      // Texto elegante (WhatsApp aceita *negrito* e linhas)
       const mensagem =
 `🌞 *SIMULAÇÃO SUNBOLT FLEX*
 
 💡 *Valor estimado da fatura atual:*  
-${formatar(total)}
+${formatar(resultado.total)}
 
 ⚡ *Valor com desconto Sunbolt Flex:*  
-${formatar(comDesconto)}
+${formatar(resultado.valorComDesconto)}
 
 📉 *Economia mensal estimada:*  
-${formatar(descontoMensal)}
+${formatar(resultado.descontoMensal)}
 
 📆 *Economia anual estimada:*  
-${formatar(descontoAnual)}
+${formatar(resultado.descontoAnual)}
 
 ━━━━━━━━━━━━━━━━━━━━━━
 ✨ Energia limpa, economia todo mês.
@@ -559,7 +561,6 @@ ${formatar(descontoAnual)}
 
 ⚠️ Esta é uma simulação. Os valores podem variar conforme consumo e bandeiras tarifárias.`;
 
-      // ✅ Troque pelo telefone do cliente (ou adapte para pegar de um input)
       const telefone = "5585999416424";
       const msg = encodeURIComponent(mensagem);
       window.open(`https://wa.me/${telefone}?text=${msg}`, "_blank");
