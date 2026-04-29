@@ -360,14 +360,14 @@
           <div class="field">
             <label for="tarifaTUSD">Tarifa TUSD (R$/kWh)</label>
             <div class="control">
-              <input type="number" id="tarifaTUSD" min="0" step="0.00001" placeholder="Ex.: 0,42111">
+              <input type="number" id="tarifaTUSD" min="0" step="0.00001" placeholder="Ex.: 0,32797">
             </div>
           </div>
 
           <div class="field">
             <label for="adcBandeira">Adicional Bandeira (R$/kWh)</label>
             <div class="control">
-              <input type="number" id="adcBandeira" min="0" step="0.00001" placeholder="Ex.: 0,02987">
+              <input type="number" id="adcBandeira" min="0" step="0.00001" placeholder="Ex.: 0,62987">
             </div>
           </div>
 
@@ -440,7 +440,7 @@
 
       const baseDesconto = consumo * (tarifaTE + tarifaTUSD);
 
-      const baseCompensavelTarifa = baseDesconto * 0.6714646730546488;
+      const baseCompensavelTarifa = baseDesconto / 0.6714646730546488;
 
       const valorEnergiaTotal = baseDesconto + (consumo * adcBandeira);
 
